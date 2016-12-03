@@ -1,0 +1,128 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/background_blue_sky">
+
+    <LinearLayout
+        android:layout_width="500dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/text_light"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/space_8">
+
+            <TextView
+                android:id="@+id/tv_system_vol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="通话音量调节"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_size_20" />
+
+            <SeekBar
+                android:id="@+id/device_audio_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/space_8"
+                android:layout_toRightOf="@id/tv_system_vol"
+                android:max="15"
+                android:maxHeight="5.0dip" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/space_8">
+
+            <TextView
+                android:id="@+id/tv_ad_vol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="广告音量调节"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_size_20" />
+
+            <SeekBar
+                android:id="@+id/device_ad_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/space_8"
+                android:layout_toRightOf="@id/tv_ad_vol"
+                android:max="100"
+                android:maxHeight="5.0dip" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/space_8">
+
+            <TextView
+                android:id="@+id/tv_system_brightness"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/system_brightness_settings"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_size_20" />
+
+            <SeekBar
+                android:id="@+id/device_light_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/space_8"
+                android:layout_toRightOf="@id/tv_system_brightness"
+                android:max="225"
+                android:maxHeight="5.0dip" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/space_8">
+
+            <TextView
+                android:id="@+id/tv_select_auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/brightness_auto_settings"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_size_20" />
+
+            <ImageView
+                android:id="@+id/iv_auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/space_8"
+                android:layout_toRightOf="@id/tv_select_auto"
+                android:src="@mipmap/select" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/space_25">
+
+        <ImageView
+            android:id="@id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_background" />
+    </LinearLayout>
+</FrameLayout>

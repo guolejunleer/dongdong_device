@@ -1,0 +1,138 @@
+<resources>
+
+    <style name="AppBaseTheme" parent="android:Theme.Light.NoTitleBar"></style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="fullline_view">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="wrap_view">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="dialog_title" parent="@style/fullline_view">
+        <item name="android:textSize">@dimen/text_large_primary_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_dark</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="dialog_subtitle" parent="@style/fullline_view">
+        <item name="android:textSize">@dimen/text_large_secondary_size</item>
+        <item name="android:textColor">@color/text_light</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+    </style>
+
+    <style name="dialog_divider">
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:background">@color/light_gray</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">1.0px</item>
+        <item name="android:layout_alignParentBottom">true</item>
+    </style>
+
+    <style name="dialog_common" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@drawable/dialog_background</item>
+    </style>
+
+    <style name="dialog_transparent" parent="@android:style/Theme.Light.NoTitleBar.Fullscreen">
+        <item name="android:windowBackground">@android:color/transparent</item><!--背景透明-->
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowFrame">@android:color/transparent</item><!--边框-->
+        <item name="android:windowIsFloating">true</item><!--是否浮现在activity之上-->
+        <item name="android:windowIsTranslucent">true</item><!--半透明-->
+        <item name="android:windowNoTitle">true</item><!--无标题-->
+        <item name="android:backgroundDimAmount">0.3</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <style name="section_item_divider">
+        <item name="android:background">@color/ui_dialog_divider</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">1.0px</item>
+    </style>
+
+    <style name="dialog_button">
+        <item name="android:textSize">@dimen/text_regular_primary_size</item>
+        <item name="android:textColor">@color/text_dark</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:background">@drawable/touch_clear_bg</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:layout_width">0.0dip</item>
+        <item name="android:layout_height">46.0dip</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:layout_weight">1.0</item>
+    </style>
+
+    <style name="section_item_divider_vertical">
+        <item name="android:background">@color/ui_dialog_divider</item>
+        <item name="android:layout_width">0.1px</item>
+        <item name="android:layout_height">fill_parent</item>
+    </style>
+
+    <style name="list_cell_text">
+        <item name="android:textSize">16.0dip</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="list_cell_text_dialog" parent="@style/list_cell_text">
+        <item name="android:textSize">16.0dip</item>
+        <item name="android:textColor">@color/ui_dialog_list_text</item>
+    </style>
+
+    <style name="list_cell_divider">
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:background">#cccccc</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">1.0px</item>
+        <item name="android:layout_alignParentBottom">true</item>
+    </style>
+
+    <style name="text_base" parent="@style/wrap_view">
+        <item name="android:textSize">@dimen/text_regular_primary_size</item>
+        <item name="android:textColor">@color/text_dark</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="text_multiline" parent="@style/text_base">
+        <item name="android:maxLines">5</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:lineSpacingMultiplier">1.15</item>
+    </style>
+
+    <style name="dialog_pinterest_text" parent="@style/text_multiline">
+        <item name="android:textSize">@dimen/text_regular_primary_size</item>
+        <item name="android:textColor">@color/text_dark</item>
+        <item name="android:layout_width">fill_parent</item>
+    </style>
+
+    <style name="myProgressBarStyleLarge">
+        <item name="android:indeterminateDrawable">@anim/progress_large</item>
+        <item name="android:minWidth">76dip</item>
+        <item name="android:maxWidth">76dip</item>
+        <item name="android:minHeight">76dip</item>
+        <item name="android:maxHeight">76dip</item>
+    </style>
+
+</resources>

@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "24.0.0"
+
+    defaultConfig {
+        applicationId "com.jr.door"
+        minSdkVersion 14
+        targetSdkVersion 23
+        versionCode 201601203
+        versionName "1.1.2.54"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+//    sourceSets {
+//        main {
+//            jniLibs.srcDirs = ['libs']
+//        }
+//    }
+
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.1.0'
+    }
+}
+
+apply plugin: 'org.greenrobot.greendao'
+apply plugin: 'com.neenbedankt.android-apt'
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile files('libs/CCP_REST_SDK_JAVA_v2.7r.jar')
+    compile files('libs/ForwardingDevelopmentTools_ver_1.0_release.jar')
+    compile files('libs/gemvary.jar')
+    compile files('libs/mid-sdk-2.3.jar')
+    compile 'com.loopj.android:android-async-http:1.4.9'
+    compile 'org.greenrobot:greendao:3.1.0'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile project(':InitActivity')
+    compile files('libs/Yuntx_FullLib_v5.3.0r.jar')
+}
+
+greendao {
+    schemaVersion 1
+    targetGenDir 'src/main/java'
+    daoPackage 'com.dongdong.db.gen'
+}

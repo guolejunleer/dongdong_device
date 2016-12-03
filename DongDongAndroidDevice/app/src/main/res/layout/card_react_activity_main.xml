@@ -1,0 +1,37 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/background_blue_sky">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:scaleType="fitCenter"
+        android:src="@mipmap/video_box_bg" />
+
+    <com.dongdong.widget.SearchDevicesView
+        android:id="@+id/search_device_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/register_card_tip"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/text_size_20" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/space_25">
+
+        <ImageView
+            android:id="@id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_background" />
+    </LinearLayout>
+</FrameLayout>

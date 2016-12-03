@@ -1,0 +1,24 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_device_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:contentDescription="@null"
+        android:src="@mipmap/monitoring" />
+
+    <TextView
+        android:id="@+id/tv_count_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/iv_device_dialog"
+        android:background="@drawable/toast_background"
+        android:paddingLeft="@dimen/space_3"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_30" />
+
+</RelativeLayout>

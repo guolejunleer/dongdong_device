@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:padding="@dimen/space_5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="@dimen/space_5">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/unit_device"
+                android:textSize="@dimen/text_size_20" />
+
+
+            <CheckBox
+                android:id="@+id/cb_device_unit_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="@dimen/space_5">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/wall_device"
+                android:textSize="@dimen/text_size_20" />
+
+            <CheckBox
+                android:id="@+id/cb_device_wall_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/id_device"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:digits="0123456789"
+            android:gravity="center"
+            android:hint="@string/please_input_id"
+            android:padding="@dimen/space_5"
+            android:maxLength="20"
+            android:textSize="@dimen/text_size_20" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/space_8"
+            android:text="@string/tip"
+            android:textSize="@dimen/text_size_16" />
+    </LinearLayout>
+</ScrollView>

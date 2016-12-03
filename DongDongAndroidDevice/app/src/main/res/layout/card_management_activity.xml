@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/background_sunshine"
+    android:baselineAligned="false"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@mipmap/background_sunshine"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:baselineAligned="false"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/iv_regiset_card"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/regist_native_card_btn" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/iv_cancel_card"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/unregister_card_btn" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:baselineAligned="false"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/iv_quere_card"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/query_card_btn" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/iv_verify_card"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:contentDescription="@null"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/verify_card_btn" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/space_25">
+
+        <ImageView
+            android:id="@id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_background" />
+    </LinearLayout>
+
+</FrameLayout>

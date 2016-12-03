@@ -1,0 +1,293 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@mipmap/background_blue_sky" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="700dp"
+            android:background="@drawable/back_background"
+            android:contentDescription="@null" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:orientation="vertical" >
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="8"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_normal"
+                    android:gravity="center"
+                    android:text="网络类型"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/nettype"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_pressed"
+                    android:enabled="false"
+                    android:gravity="center"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_normal"
+                    android:gravity="center"
+                    android:text="获取地址"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/netaddrtype"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_pressed"
+                    android:gravity="center"
+                    android:text=""
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_normal"
+                    android:gravity="center"
+                    android:text="IP"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/ethip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_pressed"
+                    android:gravity="center"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_normal"
+                    android:gravity="center"
+                    android:text="子网掩码"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/ethmask"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_pressed"
+                    android:gravity="center"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_normal"
+                    android:gravity="center"
+                    android:text="缺省网关"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/defaultgw"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_pressed"
+                    android:gravity="center"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_normal"
+                    android:gravity="center"
+                    android:text="DNS类型"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/dnsaddrtype"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_pressed"
+                    android:gravity="center"
+                    android:text=""
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_normal"
+                    android:gravity="center"
+                    android:text="DNS"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/primarydns"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_pressed"
+                    android:gravity="center"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_normal"
+                    android:gravity="center"
+                    android:text="备用DNS"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/secondarydns"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_pressed"
+                    android:gravity="center"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_normal"
+                    android:gravity="center"
+                    android:text="MAC地址"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/macaddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@mipmap/btn_bg_pressed"
+                    android:enabled="false"
+                    android:gravity="center"
+                    android:text="" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/ok"
+                android:layout_width="198dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="修改"
+                android:textSize="20dp" />
+
+            <Button
+                android:id="@+id/cancel"
+                android:layout_width="198dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="取消"
+                android:textSize="20dp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+</FrameLayout>

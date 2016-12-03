@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#01000000"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#90000000"
+        android:orientation="vertical"
+        android:padding="20dp" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+             android:textSize="15dp"
+            android:textColor="@android:color/white"
+            android:text="正在下载请稍后。。。。" />
+
+        <TextView
+            android:id="@+id/tv"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:text="" />
+
+        <ProgressBar
+            android:id="@+id/down_pb"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:max="100" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/cancel"
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="取消" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

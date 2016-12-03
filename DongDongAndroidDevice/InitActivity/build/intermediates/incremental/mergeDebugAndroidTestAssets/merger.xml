@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="debug"><source path="D:\DongDong\Android_studio_workspace\DongDongAndroidDevice\InitActivity\build\intermediates\bundles\debug\assets"/></dataSet><dataSet config="main"><source path="D:\DongDong\Android_studio_workspace\DongDongAndroidDevice\InitActivity\src\androidTest\assets"/><source path="D:\DongDong\Android_studio_workspace\DongDongAndroidDevice\InitActivity\build\generated\assets\shaders\androidTest\debug"/></dataSet></merger>

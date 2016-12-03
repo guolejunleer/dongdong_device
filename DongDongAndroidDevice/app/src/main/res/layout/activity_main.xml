@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/background_blue_sky"
+    android:baselineAligned="true"
+    android:orientation="horizontal">
+
+    <include
+        layout="@layout/activity_main_left"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3" />
+
+    <include
+        layout="@layout/activity_main_right"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp" />
+</LinearLayout>
