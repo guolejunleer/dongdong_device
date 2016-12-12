@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
+import com.dongdong.AppConfig;
 import com.dongdong.base.BaseApplication;
 import com.dongdong.db.LocalCardOpe;
 import com.dongdong.db.UnlockLogOpe;
@@ -44,8 +45,9 @@ public class DongDongTransferCenter implements DeviceServiceCallback {
     private static final int PHONE_CALL_REQUEST_WHAT = 9;
     private static final int STOP_PHONE_CALL_REQUEST_WHAT = 10;
     private static final int DISABLE_PHONE_CALL_REQUEST_WHAT = 11;
-    private static final int UNLOCK_TYPE_RESULT_WHAT = 12;
-    private static final int GET_TIMESTAMP_RESULT_WHAT = 13;
+    private static final int GET_TIMESTAMP_RESULT_WHAT = 12;
+    private static final int LOCAL_UNLOCK_RECORD_REQUEST_WHAT = 13;
+
 
     private static final String RESULT = "result";
     private static final String CMD_FLAG = "cmd_flag";
@@ -54,6 +56,8 @@ public class DongDongTransferCenter implements DeviceServiceCallback {
     private static final String CARD_NUMBER = "card_number";
     private static final String ROOM_NUMBER = "room_number";
     private static final String PHONE_NUMBER = "phone_number";
+    private static final String UNLOCK_TYPE = "unlock_type";
+    private static final String CARD_PHONE_NUMBER = "card_phone_number";
 
     public interface GsmCoderCallback {
         void audioRecord(byte[] coderData);
@@ -94,9 +98,10 @@ public class DongDongTransferCenter implements DeviceServiceCallback {
                     break;
                 case UNLOCK_REQUEST_WHAT:
                     // 手机开锁请求回调
-                    int unlockType = msg.arg1;
-                    String cardOrPhoneNum = (String) msg.obj;
-                    mLauncherCallback.onUnlockRequest(unlockType, cardOrPhoneNum);
+                    int unlockType = msg.getData().getInt(UNLOCK_TYPE);
+                    String cardOrPhoneNum = msg.getData().getString(CARD_PHONE_NUMBER);
+                    String roomNumber = msg.getData().getString(ROOM_NUMBER);
+                    mLauncherCallback.onUnlockRequest(unlockType, cardOrPhoneNum, roomNumber);
                     break;
                 case GET_NET_RESULT_WHAT:
                     // 请求核心板网络信息回调
@@ -147,18 +152,14 @@ public class DongDongTransferCenter implements DeviceServiceCallback {
                     int reason = msg.arg1;
                     mLauncherCallback.onDisablePhoneCallRequest(reason);
                     break;
-                case UNLOCK_TYPE_RESULT_WHAT:
-                    //上传开门记录成功的回调
-                    int dataType = msg.arg1;
-                    int unlockResult = msg.arg2;
-                    mLauncherCallback.onUnlockTypeResult(dataType, unlockResult);
-                    break;
                 case GET_TIMESTAMP_RESULT_WHAT:
                     //获取平台时间
                     //String platformTime = (String) msg.obj;
                     int platformTime = msg.arg1;
                     mLauncherCallback.onGetTimestampResult(platformTime);
                     break;
+                case LOCAL_UNLOCK_RECORD_REQUEST_WHAT:
+                    mLauncherCallback.onGetHistoryUnLockRecordRequest();
                 default:
                     break;
             }
@@ -218,12 +219,17 @@ public class DongDongTransferCenter implements DeviceServiceCallback {
     }
 
     @Override
-    public int onUnlockRequest(int unlockType, String cardOrPhoneNum) {
+    public int onUnlockRequest(int unlockType, String cardOrPhoneNum, String roomNum) {
         DDLog.i("DongDongTransferCenter.class onUnlockRequest--->>>> unlockType:"
                 + unlockType + ";cardOrPhoneNum:" + cardOrPhoneNum);
         Message msg = Message.obtain(mHandler, UNLOCK_REQUEST_WHAT);
         msg.arg1 = unlockType;
         msg.obj = cardOrPhoneNum;
+        Bundle bundle = new Bundle();
+        bundle.putInt(UNLOCK_TYPE, unlockType);
+        bundle.putString(CARD_PHONE_NUMBER, cardOrPhoneNum);
+        bundle.putString(ROOM_NUMBER, roomNum);
+        msg.setData(bundle);
         mHandler.sendMessage(msg);
         return 0;
     }
@@ -331,41 +337,29 @@ public class DongDongTransferCenter implements DeviceServiceCallback {
     }
 
     @Override
-    public int onUnlockTypeResult(int cmdFlag, int dataType, int result, int unlockCount,
-                                  List<UnlockLogBean> unlockDatas) {
-        int count = unlockCount;
-        if (dataType == APlatData.UNLOCK_TIME_DATA) {//1).如果是时时数据上传结果返回
-            if (result == APlatData.RESULT_FAILED) {//失败
-                //操作数据库在子线程中进行
-                for (int i = 0; i < count; i++) {//这里count=1
-                    UnlockLogBean bean = unlockDatas.get(i);
-                    bean.setUnlockType(bean.getUnlockType());
-                    bean.setDeviceId(bean.getDeviceId());
-                    bean.setRoomId(bean.getRoomId());
-                    bean.setUserId(bean.getUserId());
-                    bean.setCardOrPhoneNum(bean.getCardOrPhoneNum());
-                    bean.setUnlockTime(bean.getUnlockTime());
-                    UnlockLogOpe.insertData(BaseApplication.context(), bean);
+    public int onUnlockStateResult(int result, int unlockCount, List<Integer> unlockIndex) {
+        if (result == APlatData.RESULT_SUCCESS) {
+            DDLog.i("DongDongTransferCenter.clazz--->>onUnlockStateResult unlockCount: "
+                    + unlockCount + ",unlockIndex:" + unlockIndex);
+            List<UnlockLogBean> unlockLogBeanList = new ArrayList<>();
+            for (int i = 0; i < unlockIndex.size(); i++) {
+                UnlockLogBean unlockLogBean = UnlockLogOpe.
+                        queryDataByUnLockId(BaseApplication.context(), unlockIndex.get(i));
+                if (unlockLogBean == null) {
+                    break;
                 }
-                DDLog.i("DongDongTransferCenter.clazz--->>upload faild,so we save time unlock data!!!");
+                UnlockLogBean bean = new UnlockLogBean();
+                bean.setId((long) unlockIndex.get(i));
+                bean.setUnlockType(unlockLogBean.getUnlockType());
+                bean.setUnlockTime(unlockLogBean.getUnlockTime());
+                bean.setCardOrPhoneNum(unlockLogBean.getCardOrPhoneNum());
+                bean.setUpload(AppConfig.UNLOCK_RECORD_UPLOAD);
+                bean.setRoomNum(unlockLogBean.getRoomNum());
+                unlockLogBeanList.add(bean);
             }
-        } else {//2).如果是本地数据上传结果返回
-            if (result == APlatData.RESULT_SUCCESS) {
-                //说明本地数据上传成功,需要删除记录
-                List<Long> ids = new ArrayList<>();
-                for (int i = 0; i < count; i++) {
-                    ids.add((long) cmdFlag++);
-                }
-                DDLog.i("DongDongTransferCenter.clazz--->>upload successed,so we delete local data ids:" + ids);
-                UnlockLogOpe.deleteData(BaseApplication.context(), ids);
-            }
+            UnlockLogOpe.updateDataByUnLockList(BaseApplication.context(), unlockLogBeanList);
         }
 
-        //如果设备能正常上传数据，那么这时候再上将本地数据上传更合理
-        Message msg = Message.obtain(mHandler, UNLOCK_TYPE_RESULT_WHAT);
-        msg.arg1 = dataType;
-        msg.arg2 = result;
-        mHandler.sendMessage(msg);
         return 0;
     }
 
@@ -373,6 +367,12 @@ public class DongDongTransferCenter implements DeviceServiceCallback {
     public int onGetTimestampResult(int platformTime) {
         Message msg = Message.obtain(mHandler, GET_TIMESTAMP_RESULT_WHAT);
         msg.arg1 = platformTime;
+        mHandler.sendMessage(msg);
+        return 0;
+    }
+    @Override
+    public int onGetHistoryUnLockRecordRequest() {
+        Message msg = Message.obtain(mHandler, LOCAL_UNLOCK_RECORD_REQUEST_WHAT);
         mHandler.sendMessage(msg);
         return 0;
     }

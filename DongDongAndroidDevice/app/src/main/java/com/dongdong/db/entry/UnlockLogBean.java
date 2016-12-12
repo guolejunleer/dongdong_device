@@ -18,15 +18,13 @@ public class UnlockLogBean {
 
     private int unlockType;
 
-    private int deviceId;
-
-    private int roomId;
-
-    private int userId;
-
     private String cardOrPhoneNum;
 
     private int unlockTime;
+
+    private int upload;
+
+    private String roomNum;
 
     public UnlockLogBean() {
     }
@@ -47,30 +45,6 @@ public class UnlockLogBean {
         this.unlockType = unlockType;
     }
 
-    public int getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(int deviceId) {
-        this.deviceId = deviceId;
-    }
-
-    public int getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(int roomId) {
-        this.roomId = roomId;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
     public String getCardOrPhoneNum() {
         return cardOrPhoneNum;
     }
@@ -87,9 +61,26 @@ public class UnlockLogBean {
         this.unlockTime = unlockTime;
     }
 
+    public int getUpload() {
+        return upload;
+    }
+
+    public void setUpload(int upload) {
+        this.upload = upload;
+    }
+
+    public String getRoomNum() {
+        return roomNum;
+    }
+
+    public void setRoomNum(String roomNum) {
+        this.roomNum = roomNum;
+    }
+
     @Override
     public String toString() {
-        return "{id:" + id + ";unlockType: " + unlockType + ";cardOrPhoneNum:"
-                + cardOrPhoneNum + "}";
+        return "(id:" + id + ";unlockType: " + unlockType + ";cardOrPhoneNum:"
+                + cardOrPhoneNum +";roomNum:"+roomNum+ ")";
     }
+
 }

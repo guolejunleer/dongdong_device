@@ -49,6 +49,11 @@ public class AppConfig {
     public static final int MAX_CHECK_ROOM_INFO_COUNT = 20;
 
     /**
+     * 开门记录允许本地缓存的最大条数
+     */
+    public final static int UNLOCK_RECORD_COUNT = 4000;
+
+    /**
      * 开门记录的开门类型
      */
     public final static int UNLOCK_TYPE_APP = 1;// 手机app点击开门
@@ -72,6 +77,11 @@ public class AppConfig {
     public final static int DIALOG_TEXT_NORMAL = 0;
     public final static int DIALOG_TEXT_DIAL = 1;
 
+    /**
+     * 开门记录上传状态
+     */
+    public final static int UNLOCK_RECORD_UPLOAD = 0;
+    public final static int UNLOCK_RECORD_NOT_UPLOAD = 1;
     //拨打电话厂商配置文件
     public static final String USER_ID = "lsm0506@126.com";
     public static final String ACCOUNT_SID = "8aaf07085581a83101558242f5ab0115";

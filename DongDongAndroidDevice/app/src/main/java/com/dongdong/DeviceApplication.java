@@ -152,11 +152,19 @@ public class DeviceApplication extends BaseApplication {
                             List<RoomCardBean> roomCardBeans = RoomCardOpe.queryDataByCardNum(
                                     BaseApplication.context(), cardNum);
                             APlatData.debugLog("DeviceApplication.clazz ---->>>cardBean :" + cardBeans);
-                            if (cardBeans != null || roomCardBeans != null) {
+                            if (cardBeans != null) {
                                 for (int i = 0; i < mListeners.size(); i++) {
                                     // 本地数据库直接开门
                                     mListeners.get(i).onLocalCardUnlock(
                                             AppConfig.UNLOCK_TYPE_LOCAL_CARD, cardNum);
+                                    APlatData.debugLog("DeviceApplication.clazz --local>>>cardNum :" + cardNum);
+                                }
+                            }
+                           else if (roomCardBeans != null) {
+                                for (int i = 0; i < mListeners.size(); i++) {
+                                    // 本地数据库直接开门
+                                    mListeners.get(i).onLocalCardUnlock(
+                                            AppConfig.UNLOCK_TYPE_PLATFORM_CARD, cardNum);
                                     APlatData.debugLog("DeviceApplication.clazz --local>>>cardNum :" + cardNum);
                                 }
                             } else {

@@ -45,7 +45,7 @@ public interface DeviceServiceCallback {
      * @param cardOrPhoneNum 卡号或者手机号
      * @return state
      */
-    int onUnlockRequest(int unlockType, String cardOrPhoneNum);
+    int onUnlockRequest(int unlockType, String cardOrPhoneNum ,String roomNum);
 
     /**
      * 发送音视频流请求
@@ -155,17 +155,15 @@ public interface DeviceServiceCallback {
 
 
     /**
-     * 开门记录返回状态回应 如果失败那么本地保存
+     * 开门记录返回状态回应
      *
-     * @param cmdFlag     返回第一条数据ID,根据这个去删除本地数据
-     * @param dataType    返回第上传开门记录数据类型，时时或本地
      * @param result      返回状态码
      * @param unlockCount 返回开门记录数量
-     * @param unlockData  本地需要保存数据集合
+     * @param unlockIndex  开门记录开门Index数据集合
      * @return state
      */
-    int onUnlockTypeResult(int cmdFlag, int dataType, int result, int unlockCount,
-                           List<UnlockLogBean> unlockData);
+    int onUnlockStateResult(int result, int unlockCount,
+                            List<Integer> unlockIndex);
 
     /**
      * 获取平台时间
@@ -174,4 +172,11 @@ public interface DeviceServiceCallback {
      * @return state
      */
     int onGetTimestampResult(int platformTime);
+
+    /**
+     * 获取历史开门记录请求
+     *
+     */
+    int onGetHistoryUnLockRecordRequest();
+
 }

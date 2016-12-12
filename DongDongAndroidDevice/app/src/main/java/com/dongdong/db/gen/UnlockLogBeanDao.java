@@ -26,11 +26,10 @@ public class UnlockLogBeanDao extends AbstractDao<UnlockLogBean, Long> {
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property UnlockType = new Property(1, int.class, "unlockType", false, "UNLOCK_TYPE");
-        public final static Property DeviceId = new Property(2, int.class, "deviceId", false, "DEVICE_ID");
-        public final static Property RoomId = new Property(3, int.class, "roomId", false, "ROOM_ID");
-        public final static Property UserId = new Property(4, int.class, "userId", false, "USER_ID");
-        public final static Property CardOrPhoneNum = new Property(5, String.class, "cardOrPhoneNum", false, "CARD_OR_PHONE_NUM");
-        public final static Property UnlockTime = new Property(6, int.class, "unlockTime", false, "UNLOCK_TIME");
+        public final static Property CardOrPhoneNum = new Property(2, String.class, "cardOrPhoneNum", false, "CARD_OR_PHONE_NUM");
+        public final static Property UnlockTime = new Property(3, int.class, "unlockTime", false, "UNLOCK_TIME");
+        public final static Property Upload = new Property(4, int.class, "upload", false, "UPLOAD");
+        public final static Property RoomNum = new Property(5, String.class, "roomNum", false, "ROOM_NUM");
     }
 
 
@@ -48,11 +47,10 @@ public class UnlockLogBeanDao extends AbstractDao<UnlockLogBean, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"UNLOCK_LOG_BEAN\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"UNLOCK_TYPE\" INTEGER NOT NULL ," + // 1: unlockType
-                "\"DEVICE_ID\" INTEGER NOT NULL ," + // 2: deviceId
-                "\"ROOM_ID\" INTEGER NOT NULL ," + // 3: roomId
-                "\"USER_ID\" INTEGER NOT NULL ," + // 4: userId
-                "\"CARD_OR_PHONE_NUM\" TEXT," + // 5: cardOrPhoneNum
-                "\"UNLOCK_TIME\" INTEGER NOT NULL );"); // 6: unlockTime
+                "\"CARD_OR_PHONE_NUM\" TEXT," + // 2: cardOrPhoneNum
+                "\"UNLOCK_TIME\" INTEGER NOT NULL ," + // 3: unlockTime
+                "\"UPLOAD\" INTEGER NOT NULL ," + // 4: upload
+                "\"ROOM_NUM\" TEXT);"); // 5: roomNum
     }
 
     /** Drops the underlying database table. */
@@ -70,15 +68,18 @@ public class UnlockLogBeanDao extends AbstractDao<UnlockLogBean, Long> {
             stmt.bindLong(1, id);
         }
         stmt.bindLong(2, entity.getUnlockType());
-        stmt.bindLong(3, entity.getDeviceId());
-        stmt.bindLong(4, entity.getRoomId());
-        stmt.bindLong(5, entity.getUserId());
  
         String cardOrPhoneNum = entity.getCardOrPhoneNum();
         if (cardOrPhoneNum != null) {
-            stmt.bindString(6, cardOrPhoneNum);
+            stmt.bindString(3, cardOrPhoneNum);
         }
-        stmt.bindLong(7, entity.getUnlockTime());
+        stmt.bindLong(4, entity.getUnlockTime());
+        stmt.bindLong(5, entity.getUpload());
+ 
+        String roomNum = entity.getRoomNum();
+        if (roomNum != null) {
+            stmt.bindString(6, roomNum);
+        }
     }
 
     @Override
@@ -90,15 +91,18 @@ public class UnlockLogBeanDao extends AbstractDao<UnlockLogBean, Long> {
             stmt.bindLong(1, id);
         }
         stmt.bindLong(2, entity.getUnlockType());
-        stmt.bindLong(3, entity.getDeviceId());
-        stmt.bindLong(4, entity.getRoomId());
-        stmt.bindLong(5, entity.getUserId());
  
         String cardOrPhoneNum = entity.getCardOrPhoneNum();
         if (cardOrPhoneNum != null) {
-            stmt.bindString(6, cardOrPhoneNum);
+            stmt.bindString(3, cardOrPhoneNum);
         }
-        stmt.bindLong(7, entity.getUnlockTime());
+        stmt.bindLong(4, entity.getUnlockTime());
+        stmt.bindLong(5, entity.getUpload());
+ 
+        String roomNum = entity.getRoomNum();
+        if (roomNum != null) {
+            stmt.bindString(6, roomNum);
+        }
     }
 
     @Override
@@ -117,11 +121,10 @@ public class UnlockLogBeanDao extends AbstractDao<UnlockLogBean, Long> {
     public void readEntity(Cursor cursor, UnlockLogBean entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setUnlockType(cursor.getInt(offset + 1));
-        entity.setDeviceId(cursor.getInt(offset + 2));
-        entity.setRoomId(cursor.getInt(offset + 3));
-        entity.setUserId(cursor.getInt(offset + 4));
-        entity.setCardOrPhoneNum(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setUnlockTime(cursor.getInt(offset + 6));
+        entity.setCardOrPhoneNum(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setUnlockTime(cursor.getInt(offset + 3));
+        entity.setUpload(cursor.getInt(offset + 4));
+        entity.setRoomNum(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     @Override

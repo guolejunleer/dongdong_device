@@ -128,7 +128,7 @@ public class SettingHomeActivity extends Activity implements OnKeyboardEventsCha
     }
 
     @OnClick({R.id.iv_deviceinfo_setting, R.id.iv_net_setting, R.id.iv_user_setting, R.id.iv_card_setting,
-            R.id.iv_pwd_etting, R.id.iv_devicemode_setting, R.id.iv_back})
+            R.id.iv_pwd_etting, R.id.iv_devicemode_setting,R.id.iv_lookup_system, R.id.iv_back})
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
@@ -149,6 +149,9 @@ public class SettingHomeActivity extends Activity implements OnKeyboardEventsCha
                 break;
             case R.id.iv_devicemode_setting://跳转设备模式设置界面
                 deviceModeSetting();
+                break;
+            case R.id.iv_lookup_system://跳转开门记录设置界面
+                this.startActivity(new Intent(this,UnLockRecordActivity.class));
                 break;
             case R.id.iv_back:
                 this.finish();

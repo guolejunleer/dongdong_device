@@ -90,5 +90,31 @@
     <string name="user_offline">住户不在线!</string>
     <string name="stop_phone_call">不能拨打电话!</string>
     <string name="error_tip">错误提示:</string>
-
+    <string name="unlock_type">开门类型</string>
+    <string name="unlock_time">开门时间</string>
+    <string name="unlock_upload">上传状态</string>
+    <string name="unlock_room_number">房号</string>
+    <string name="App">App</string>
+    <string name="card_local">本机注册卡</string>
+    <string name="WIFI">WIFI</string>
+    <string name="Temporary_Password">临时密码</string>
+    <string name="Household_Password">住户密码</string>
+    <string name="card_cloud">平台下发卡</string>
+    <string name="bluetooth">蓝牙</string>
+    <string name="phone">电话#</string>
+    <string name="is_upload">已上传</string>
+    <string name="is_not_upload">未上传</string>
+    <string name="unlock_number">手机号/卡号</string>
+    <string name="unlock_record_count">总记录条数：%1$d</string>
+    <string name="begin_time">开始时间</string>
+    <string name="end_time">结束时间</string>
+    <string name="select_time">请选择时间</string>
+    <string name="year">年</string>
+    <string name="month">月</string>
+    <string name="day">日</string>
+    <string name="hour">时</string>
+    <string name="minute">分</string>
+    <string name="second">秒</string>
+    <string name="search">查询条件</string>
+    <string name="all">全部</string>
 </resources>

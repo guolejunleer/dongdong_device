@@ -512,7 +512,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     public void onCheckCardResult(int result, String cardNum) {
         DDLog.i("Launcher.clazz--->>>onCheckCardResult  result:" + result);
         CountTimeRunnable.isUnlocking = false;
-        mKeyEventManager.unlockRequest(result, AppConfig.UNLOCK_TYPE_PLATFORM_CARD, cardNum);
+        mKeyEventManager.unlockRequest(result, AppConfig.UNLOCK_TYPE_PLATFORM_CARD, cardNum, "");
     }
 
     /**
@@ -523,7 +523,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     @Override
     public void onPwdUnlock(int result) {
         DDLog.i("Launcher.clazz--->>>onPwdUnlock  result:" + result);
-        mKeyEventManager.unlockRequest(result, AppConfig.UNLOCK_TYPE_PASSWORD, "0");
+        mKeyEventManager.unlockRequest(result, AppConfig.UNLOCK_TYPE_PASSWORD, "0", "");
     }
 
     /**
@@ -534,9 +534,9 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
      * @return state
      */
     @Override
-    public int onUnlockRequest(int unlockType, String cardOrPhoneNum) {
+    public int onUnlockRequest(int unlockType, String cardOrPhoneNum, String roomNum) {
         DDLog.i("Launcher.clazz--->>>onUnlockRequest  unlockType:" + unlockType);
-        mKeyEventManager.unlockRequest(0, unlockType, cardOrPhoneNum);
+        mKeyEventManager.unlockRequest(0, unlockType, cardOrPhoneNum, roomNum);
         return 0;
     }
 
@@ -548,7 +548,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     @Override
     public void onLocalCardUnlock(int unlockType, String cardNum) {
         DDLog.i("Launcher.clazz--->>>onLocalCardUnlock  unlockType:" + unlockType);
-        mKeyEventManager.unlockRequest(0, unlockType, cardNum);
+        mKeyEventManager.unlockRequest(0, unlockType, cardNum, "");
     }
 
     /**
@@ -648,7 +648,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     public void unLockTip() {
         DDLog.i("Launcher.clazz--->>>unLockTip");
         mKeyEventManager.unlockRequest(APlatData.RESULT_FAILED,
-                AppConfig.UNLOCK_TYPE_PLATFORM_CARD, "");
+                AppConfig.UNLOCK_TYPE_PLATFORM_CARD, "", "");
     }
 
     /**
@@ -810,25 +810,6 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
         return 0;
     }
 
-    /**
-     * 上传开门记录成功后，再判断
-     *
-     * @param dataType 核心板上传开门记录成功状态
-     * @param result   核心板上传开门记录成功条数，时时数据count=0,本地数据大于0
-     * @return state
-     */
-    @Override
-    public int onUnlockTypeResult(int dataType, int result) {
-        DDLog.i("Launcher.clazz onUnlockTypeResult dataType:" + dataType
-                + ";result:" + result);
-        if (dataType == APlatData.UNLOCK_TIME_DATA) {
-            if (result == APlatData.RESULT_SUCCESS) {
-                mKeyEventManager.getUnlockLog();
-            }
-        }
-        return 0;
-    }
-
     public void testDelete(View view) {
     }
 
@@ -858,6 +839,15 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
         if (mTvPlatformTime != null) {
             mTvPlatformTime.setText(strTime);
         }
+        return 0;
+    }
+
+    /**
+     * 获取历史开门记录请求
+     */
+    @Override
+    public int onGetHistoryUnLockRecordRequest() {
+        mKeyEventManager.getUnlockLog();
         return 0;
     }
 

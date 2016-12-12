@@ -26,12 +26,15 @@ import com.dongdong.ui.dialog.CommonDialog;
 import com.dongdong.utils.DDLog;
 import com.dongdong.utils.DeviceInfoUtils;
 import com.dongdong.utils.SPUtils;
+import com.dongdong.utils.TimeZoneUtil;
 import com.jr.door.Launcher;
 import com.jr.door.R;
 import com.jr.gs.JRService;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * 按键信息处理结果的执行者
@@ -115,7 +118,8 @@ public class KeyEventManager {
                                 DongDongCenter.queryRoomNumber(mKeyboardNumber);
                                 ((Launcher) mContext).mHandler.sendEmptyMessageDelayed(
                                         Launcher.UPDATE_DIALOG_WHAT, 2 * 1000);
-                                DDLog.i("KeyEventManager.clazz---->># wall sendEmptyMessageDelayed and queryRoomNumber");
+                                DDLog.i("KeyEventManager.clazz---->># wall " +
+                                        "sendEmptyMessageDelayed and queryRoomNumber");
                             }
                         }
                     } else {//单元机
@@ -132,7 +136,8 @@ public class KeyEventManager {
                                 DongDongCenter.queryRoomNumber(mKeyboardNumber);
                                 ((Launcher) mContext).mHandler.sendEmptyMessageDelayed(
                                         Launcher.UPDATE_DIALOG_WHAT, 2 * 1000);
-                                DDLog.i("KeyEventManager.clazz---->># unit sendEmptyMessageDelayed and queryRoomNumber");
+                                DDLog.i("KeyEventManager.clazz---->># unit " +
+                                        "sendEmptyMessageDelayed and queryRoomNumber");
                             }
                         }
                     }
@@ -159,7 +164,8 @@ public class KeyEventManager {
                 mTvPwd.setText(mPwd);
                 DDLog.i("KeyEventManager.clazz---->>onUpdateNumberView number:" + number);
             } else {
-                if (DeviceInfoUtils.getDeviceMode(mContext) == DeviceApplication.DEVICE_MODE_WALL) {// 围墙机
+                if (DeviceInfoUtils.getDeviceMode(mContext) ==
+                        DeviceApplication.DEVICE_MODE_WALL) {// 围墙机
                     mWallDevice.setVisibility(View.VISIBLE);
                     boolean maxNum = mKeyboardNumber.length() >= 8;
                     if (maxNum) {
@@ -189,7 +195,7 @@ public class KeyEventManager {
     /**
      * 显示密码框
      */
-    public void showPwdDialog() {
+    private void showPwdDialog() {
         isInputPwdStatus = true;
         View diaView = View.inflate(mContext, R.layout.password_dialog, null);
         mTvPwd = (TextView) diaView.findViewById(R.id.pwd);
@@ -250,7 +256,7 @@ public class KeyEventManager {
      *
      * @param num 显示的数字
      */
-    public void updateUnitDeviceImage(String num) {
+    private void updateUnitDeviceImage(String num) {
         ImageView iv = new ImageView(mContext);
         iv.setImageResource(getMipmapResID(num));
         mUnitDevice.addView(iv);
@@ -261,7 +267,7 @@ public class KeyEventManager {
      *
      * @param num 显示的数字
      */
-    public void updateWallDeviceImage(String num) {
+    private void updateWallDeviceImage(String num) {
         ImageView iv = new ImageView(mContext);
         iv.setImageResource(getMipmapResID(num));
         int dongHaoCount = mWallDeviceDongHao.getChildCount();
@@ -291,7 +297,7 @@ public class KeyEventManager {
         }
     }
 
-    public int getMipmapResID(String digital) {
+    private int getMipmapResID(String digital) {
         int resId = R.mipmap.number_null;
         switch (digital) {
             case "0":
@@ -328,7 +334,7 @@ public class KeyEventManager {
         return resId;
     }
 
-    public void playKeyVoice(String key) {
+    private void playKeyVoice(String key) {
         if (!isInputPwdStatus) {
             mSound.playSound(key);// 播放音频文件
         }
@@ -388,7 +394,7 @@ public class KeyEventManager {
         resetKeyboardEventStatus();
     }
 
-    public String getManagementPwd() {
+    private String getManagementPwd() {
         String pwd = (String) SPUtils.getParam(mContext,
                 SPUtils.DD_CONFIG_SHARE_PREF_NAME, SPUtils.SP_KEY_MANAGEMENT_PWD, "");
         if (!TextUtils.isEmpty(pwd)) {
@@ -429,28 +435,32 @@ public class KeyEventManager {
      * @param unLockType      开门类型
      * @param cardOrPhonedNum 电话号码或者卡号
      */
-    public void unlockRequest(final int result, final int unLockType, final String cardOrPhonedNum) {
+    public void unlockRequest(final int result, final int unLockType,
+                              final String cardOrPhonedNum, final String roomNum) {
         if (result == APlatData.RESULT_SUCCESS) {
             JRService.JRUnlock();
             mSound.opendoorSucc(true);
             BaseApplication.showToast(R.string.open_door);
-
-            DDLog.i("KeyEventManager.clazz unlockRequest--->>> unLockType:" + unLockType
+            DDLog.i("KeyEventManager.clazz unlockRequest--->>> getUnlockNameByType:" + unLockType
                     + "; cardOrPhonedNum:" + cardOrPhonedNum);
-
+            Date time = TimeZoneUtil.transformTime(new Date(System.currentTimeMillis()),
+                    TimeZone.getTimeZone("GMT"), TimeZone.getTimeZone("GMT-08"));
+            long unlockTime = time.getTime() / 1000;
+            DDLog.i("KeyEventManager.clazz unlockRequest--->>> unlockTime:" + unlockTime);
             //1先获取这条记录保存在本地数据库的id,幸好GreenDao已经做好了
             UnlockLogBean bean = new UnlockLogBean();
-            bean.setId((long) 0);
             bean.setUnlockType(unLockType);
-            bean.setDeviceId(0);
-            bean.setRoomId(0);
-            bean.setUserId(0);
             bean.setCardOrPhoneNum(cardOrPhonedNum);
-            bean.setUnlockTime(0);
-            //2.将开门记录信息上报平台
+            bean.setUnlockTime((int) unlockTime);
+            bean.setUpload(AppConfig.UNLOCK_RECORD_NOT_UPLOAD);
+            bean.setRoomNum(roomNum);
+            //2.将这条数据存到本地数据库
+            UnlockLogOpe.insertData(BaseApplication.context(), bean);
+            //3.将开门记录信息上报平台
             List<UnlockLogBean> beans = new ArrayList<>();
             beans.add(bean);
             reportUnlockLog2Platform(1, beans);
+            deleteUnLockRecordData();
         } else {
             BaseApplication.showToast(R.string.unlock_failed);
             mSound.opendoorSucc(false);
@@ -463,7 +473,7 @@ public class KeyEventManager {
      * @param dataType 上传数据类型:本地数据、时时数据
      * @param unlocks  上传数据集合
      */
-    public void reportUnlockLog2Platform(final int dataType, final List<UnlockLogBean> unlocks) {
+    private void reportUnlockLog2Platform(final int dataType, final List<UnlockLogBean> unlocks) {
         SocketThreadManager.startSocketThread(new Runnable() {
 
             @Override
@@ -487,10 +497,14 @@ public class KeyEventManager {
     }
 
     /**
-     * 应用初次启动去本地查询开门记录信息，有就上传到平台
+     * 历史开门记录上传到平台
      */
     public void getUnlockLog() {
-        List<UnlockLogBean> unlockLogBeans = UnlockLogOpe.queryAll(mContext.getApplicationContext());
+        List<UnlockLogBean> unlockLogBeans = UnlockLogOpe.queryDataByUnlockState(
+                mContext.getApplicationContext(), AppConfig.UNLOCK_RECORD_NOT_UPLOAD);
+        if (unlockLogBeans == null) {
+            return;
+        }
         int size = unlockLogBeans.size();
         DDLog.i("KeyEventManager.clazz getUnlockLog--->>> size:" + size);
         if (size > 0) {
@@ -501,24 +515,42 @@ public class KeyEventManager {
                 reportUnlockLog2Platform(0, unlockLogBeans);
             } else {
                 //如果本地保存数据大于上传数量最大值，那么一次就上传规定的最大条数
-                int count = size;
-                int autoCount = 0;
-                while ((count / AppConfig.MAX_UPLOAD_UNLOCK_COUNT) >= 1) {
-                    List<UnlockLogBean> tempSq = unlockLogBeans.subList(
-                            autoCount * AppConfig.MAX_UPLOAD_UNLOCK_COUNT,
-                            (autoCount + 1) * AppConfig.MAX_UPLOAD_UNLOCK_COUNT);
-                    DDLog.i("KeyEventManager.clazz getUnlockLog--->>> count:" + count
-                            + ";autoCount:" + autoCount + ";tempSq.size:" + tempSq.size());
-                    reportUnlockLog2Platform(0, tempSq);
-                    count -= AppConfig.MAX_UPLOAD_UNLOCK_COUNT;
-                    autoCount++;
-                }
-                List<UnlockLogBean> temps = unlockLogBeans.subList(size - count, size);
+//                int count = size;
+//                int autoCount = 0;
+//                while ((count / AppConfig.MAX_UPLOAD_UNLOCK_COUNT) >= 1) {
+//                    List<UnlockLogBean> tempSq = unlockLogBeans.subList(
+//                            autoCount * AppConfig.MAX_UPLOAD_UNLOCK_COUNT,
+//                            (autoCount + 1) * AppConfig.MAX_UPLOAD_UNLOCK_COUNT);
+//                    DDLog.i("KeyEventManager.clazz getUnlockLog--->>> count:" + count
+//                            + ";autoCount:" + autoCount + ";tempSq.size:" + tempSq.size());
+//                    reportUnlockLog2Platform(0, tempSq);
+//                    count -= AppConfig.MAX_UPLOAD_UNLOCK_COUNT;
+//                    autoCount++;
+//                }
+                List<UnlockLogBean> temps = unlockLogBeans.subList(0,
+                        AppConfig.MAX_UPLOAD_UNLOCK_COUNT);
                 reportUnlockLog2Platform(0, temps);
-                DDLog.i("KeyEventManager.clazz getUnlockLog--->>> count:" + count
-                        + ";autoCount:" + autoCount + ";tempSq.size:" + temps.size()
-                        + ";size:" + size);
             }
+        } else {
+            reportUnlockLog2Platform(0, null);
         }
     }
+
+    private void deleteUnLockRecordData() {
+        List<UnlockLogBean> beans = UnlockLogOpe.queryAll(BaseApplication.context());
+        if (beans == null) {
+            return;
+        }
+        DDLog.i("DongDongTransferCenter.clazz--->>deleteUploadData() queryAll.size:" + beans.size());
+        int count = beans.size() - AppConfig.UNLOCK_RECORD_COUNT;
+        if (count > 0) {
+            List<Long> unLockIndex = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                long unLockId = beans.get(i).getId();
+                unLockIndex.add(unLockId);
+            }
+            UnlockLogOpe.deleteData(BaseApplication.context(), unLockIndex);
+        }
+    }
+
 }

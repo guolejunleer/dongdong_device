@@ -3,7 +3,6 @@ package com.dongdong.socket.normal;
 import com.dongdong.DeviceApplication;
 import com.dongdong.bean.RoomInfoBean;
 import com.dongdong.db.entry.RoomCardBean;
-import com.dongdong.db.entry.UnlockLogBean;
 import com.dongdong.sdk.DongDongCenter;
 
 import java.io.IOException;
@@ -126,8 +125,14 @@ public class DSParse {
             case APlatData.CMD_DISABLE_PHONE_CALL_REQUEST:
                 onDisablePhoneCallRequest();
                 break;
-            case APlatData.CMD_UNLOCKTYPE_RESULT:
-                onUnlockTypeResult();
+            case APlatData.CMD_UNLOCK_TYPE_TIME_DATA_RESULT:
+                onUnLockTimeDataResult();
+                break;
+            case APlatData.CMD_GET_UNLOCK_TYPE__HISTORY_DATA_REQUEST:
+                onGetHistoryUnLockRecordRequest();
+                break;
+            case APlatData.CMD_UNLOCK_TYPE_HISTORY_DATA_RESULT:
+                onUnlockHistoryTimeResult();
                 break;
             case APlatData.CMD_GET_TIMESTAMP_RESULT:
                 onGetTimestampResult();
@@ -370,10 +375,17 @@ public class DSParse {
         }
         int unlockType = mByteOutput.getInt();
         String cardOrPhoneNumber = mByteOutput.getString(APlatData.PHONE_NUMBER_LENGTH);
+        remainLen = mByteOutput.getRemainDataLength();
+        if (remainLen < APlatData.ROOM_NUMBER_LENGTH) {
+            APlatData.debugLog("DSParse.clazz onUnlockRequest roomNumber length too short:"
+                    + remainLen);
+            return -1;
+        }
+        String roomNumber = mByteOutput.getString(APlatData.ROOM_NUMBER_LENGTH);
         APlatData.debugLog("DSParse.clazz onUnlockRequest:unlockType:" + unlockType
-                + ";cardOrPhoneNumber:" + cardOrPhoneNumber);
+                + ";cardOrPhoneNumber:" + cardOrPhoneNumber + " ,roomNumber:" + roomNumber);
         if (mCallback != null) {
-            mCallback.onUnlockRequest(unlockType, cardOrPhoneNumber);
+            mCallback.onUnlockRequest(unlockType, cardOrPhoneNumber, roomNumber);
         }
         return 0;
     }
@@ -601,64 +613,33 @@ public class DSParse {
      *
      * @return result
      */
-    private int onUnlockTypeResult() {
+    private int onUnlockHistoryTimeResult() {
         int remainLen = mByteOutput.getRemainDataLength();
-        if (remainLen < (4 + 4 + 4)) {
-            APlatData.debugLog("DSParse.clazz onUnlockTypeResult get dataType result count short:"
+        if (remainLen < (4 + 4)) {
+            APlatData.debugLog("DSParse.clazz onUnlockStateResult get result count short:"
                     + remainLen);
             return -1;
         }
-        int dataType = mByteOutput.getInt();
         int result = mByteOutput.getInt();
         int count = mByteOutput.getInt();
 
-        APlatData.debugLog("DSParse.clazz onUnlockTypeResult cmdFlag:" + cmdFlag
-                + ";dataType:" + dataType + ";result:" + result + ";count:" + count);
-        if (dataType == APlatData.UNLOCK_TIME_DATA) {//1.如果是时时数据上传结果返回
-            ArrayList<UnlockLogBean> beans = new ArrayList<>();
-            if (result == APlatData.RESULT_FAILED) {
-                for (int i = 0; i < count; i++) {//这里count=1
-                    remainLen = mByteOutput.getRemainDataLength();
-                    if (remainLen < (4 + 4 + 4 + 4)) {
-                        APlatData.debugLog("onUnlockTypeResult card get unLockType deviceId "
-                                + "roomId userId short:" + remainLen);
-                        break;
-                    }
-                    int unLockType = mByteOutput.getInt();
-                    int deviceId = mByteOutput.getInt();
-                    int roomId = mByteOutput.getInt();
-                    int userId = mByteOutput.getInt();
-                    remainLen = mByteOutput.getRemainDataLength();
-                    if (remainLen < APlatData.CARD_NUMBER_LENGTH) {
-                        APlatData.debugLog("onUnlockTypeResult card get cardOrPhoneNumNum short: "
-                                + remainLen);
-                        break;
-                    }
-                    String cardOrPhoneNumNum = mByteOutput.getString(APlatData.CARD_NUMBER_LENGTH);
-                    remainLen = mByteOutput.getRemainDataLength();
-                    if (remainLen < 4) {
-                        APlatData.debugLog("onUnlockTypeResult card get unlockTime short: "
-                                + remainLen);
-                        break;
-                    }
-                    int unlockTime = mByteOutput.getInt();
-                    UnlockLogBean bean = new UnlockLogBean();
-                    bean.setUnlockType(unLockType);
-                    bean.setDeviceId(deviceId);
-                    bean.setRoomId(roomId);
-                    bean.setUserId(userId);
-                    bean.setCardOrPhoneNum(cardOrPhoneNumNum);
-                    bean.setUnlockTime(unlockTime);
-                    beans.add(bean);
-                }
+        APlatData.debugLog("DSParse.clazz onUnlockStateResult  result:"
+                + result + ";count:" + count);
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            remainLen = mByteOutput.getRemainDataLength();
+            if (remainLen < 4) {
+                APlatData.debugLog("onUnlockStateResult card get getUnlockNameByType " +
+                        "unLockIndex short:" + remainLen);
+                break;
             }
-            if (mCallback != null) {
-                mCallback.onUnlockTypeResult(cmdFlag, dataType, result, count, beans);
-            }
-        } else { //2.如果是本地数据上传结果返回
-            if (mCallback != null) {
-                mCallback.onUnlockTypeResult(cmdFlag, dataType, result, count, null);
-            }
+            int unLockIndex = mByteOutput.getInt();
+            APlatData.debugLog("DSParse.clazz onUnlockStateResult  " +
+                    "unLockIndex:" + unLockIndex);
+            list.add(unLockIndex);
+        }
+        if (mCallback != null) {
+            mCallback.onUnlockStateResult(result, count, list);
         }
         return 0;
     }
@@ -759,6 +740,40 @@ public class DSParse {
                 + remainSize + ",roomCount:" + roomCount);
         if (remainSize > 0) {
             DongDongCenter.getRoomCardInfo(0, DeviceApplication.mRoomIDSet);
+        }
+        return 0;
+    }
+    /**
+     * 22.获取历史开门记录请求
+     */
+    private int onGetHistoryUnLockRecordRequest() {
+        APlatData.debugLog("DSParse.clazz onGetHistoryUnLockRecordRequest:"
+                + mByteOutput.getRemainDataLength());
+        if (mCallback != null) {
+            mCallback.onGetHistoryUnLockRecordRequest();
+        }
+        return 0;
+    }
+
+    /**
+     * 23.上传实时开门记录回应
+     */
+
+    private int onUnLockTimeDataResult() {
+        int remainLen = mByteOutput.getRemainDataLength();
+        if (remainLen < (4 + 4)) {
+            APlatData.debugLog("DSParse.clazz onUnLockTimeDataResult get  result UnlockIndex short:"
+                    + remainLen);
+            return -1;
+        }
+        int result = mByteOutput.getInt();
+        int unLockIndex = mByteOutput.getInt();
+        List<Integer> unLockIndexList = new ArrayList<>();
+        unLockIndexList.add(unLockIndex);
+        APlatData.debugLog("DSParse.clazz onUnLockTimeDataResult cmdFlag:" + cmdFlag
+                + ";result:" + result + ";unLockIndex:" + unLockIndex);
+        if (mCallback != null) {
+            mCallback.onUnlockStateResult(result, 1, unLockIndexList);
         }
         return 0;
     }

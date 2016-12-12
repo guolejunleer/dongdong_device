@@ -160,14 +160,22 @@ public class APlatData {
 
     final static short CMD_DISABLE_PHONE_CALL_REQUEST = 0xFA;// 新增电话欠费协议
 
-    final static short CMD_UNLOCKTYPE_REQUEST = 0xFD;//开门记录协议
-    final static short CMD_UNLOCKTYPE_RESULT = 0xFE;
+//    final static short CMD_UNLOCKTYPE_REQUEST = 0xFD;//开门记录协议
+//    final static short CMD_UNLOCKTYPE_RESULT = 0xFE;
+
     //同步时间协议
     final static short CMD_GET_TIMESTAMP_REQUEST = 0x0105;
     final static short CMD_GET_TIMESTAMP_RESULT = 0x0106;
     //获取房号卡号信息协议
     final static short CMD_GET_ROOMCARD_INFO_REQUEST = 0x107;
     final static short CMD_GET_ROOMCARD_INFO_RESULT = 0x108;
+
+    final static short CMD_UNLOCK_TYPE_TIME_DATA_REQUEST = 0x010A; //实时开门记录协议
+    final static short CMD_UNLOCK_TYPE_TIME_DATA_RESULT = 0x010B;
+
+    final static short CMD_GET_UNLOCK_TYPE__HISTORY_DATA_REQUEST = 0x010C; //历史开门记录协议
+    final static short CMD_UNLOCK_TYPE_HISTORY_DATA_REQUEST = 0x010D;
+    final static short CMD_UNLOCK_TYPE_HISTORY_DATA_RESULT = 0x010E;
 
     /**
      * Debug打印

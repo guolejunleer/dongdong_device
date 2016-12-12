@@ -440,7 +440,7 @@ public class YTXPlayPhone {
                 long abs = Math.abs(System.currentTimeMillis() - lastTime);
                 if (abs > 2000) {
                     ((Launcher) mContext).getKeyboardEvents().unlockRequest(0,
-                            AppConfig.UNLOCK_TYPE_CALL, mPhoneNum);
+                            AppConfig.UNLOCK_TYPE_CALL, mPhoneNum, mRoomNum);
                     lastTime = System.currentTimeMillis();
                 }
             }

@@ -11,7 +11,7 @@ public interface LauncherCallback {
 
     int onPlayOrStopDevice(int status);
 
-    int onUnlockRequest(int unlockType, String cardOrPhoneNum);
+    int onUnlockRequest(int unlockType, String cardOrPhoneNum, String roomNum);
 
     void onCheckCardResult(int result, String cardNum);
 
@@ -29,7 +29,7 @@ public interface LauncherCallback {
 
     void onSetWifiParams(int result);
 
-    int onUnlockTypeResult(int dataType,int result);
-
     int onGetTimestampResult(int platformTime);
+
+    int onGetHistoryUnLockRecordRequest();
 }

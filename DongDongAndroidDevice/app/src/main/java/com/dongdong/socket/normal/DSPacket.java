@@ -19,10 +19,10 @@ public class DSPacket {
         /**
          * 音视频数据分片包
          *
-         * @param mdpkt       音视频数据头指针
-         * @param mdpktlength 音视频数据长度
+         * @param mdPkt       音视频数据头指针
+         * @param mdPktLength 音视频数据长度
          */
-        void onMediaPacket(byte[] mdpkt, int mdpktlength);
+        void onMediaPacket(byte[] mdPkt, int mdPktLength);
     }
 
     /**
@@ -54,61 +54,61 @@ public class DSPacket {
     /**
      * 打开音视频数据回应
      *
-     * @param cmdflag   与请求消息中cmdflag一致
+     * @param cmdFlag   与请求消息中cmdflag一致
      * @param result    执行结果
-     * @param channelid 设备通道ID
-     * @param mediamode 播放类型
+     * @param channelId 设备通道ID
+     * @param mediaMode 播放类型
      */
-    public byte[] playResult(int cmdflag, int result, int channelid, int mediamode) {
-        APlatData.debugLog("DSPacket.clazz--->>>playResult: cmdflag:" + cmdflag
-                + " result:" + result + " channelid:" + channelid
-                + " mediamode:" + mediamode);
-        packetHeader(cmdflag, APlatData.CMD_PLAY_RESULT, (short) 1, (short) 1);
+    public byte[] playResult(int cmdFlag, int result, int channelId, int mediaMode) {
+        APlatData.debugLog("DSPacket.clazz--->>>playResult: cmdFlag:" + cmdFlag
+                + " result:" + result + " channelId:" + channelId
+                + " mediaMode:" + mediaMode);
+        packetHeader(cmdFlag, APlatData.CMD_PLAY_RESULT, (short) 1, (short) 1);
         mByteInput.putInt(result);
-        mByteInput.putInt(channelid);
-        mByteInput.putInt(mediamode);
+        mByteInput.putInt(channelId);
+        mByteInput.putInt(mediaMode);
         return mByteInput.getCopyBytes();
     }
 
     /**
      * 关闭音视频数据回应
      *
-     * @param cmdflag   与请求消息中cmdflag一致
+     * @param cmdFlag   与请求消息中cmdflag一致
      * @param result    执行结果
-     * @param channelid 设备通道ID
-     * @param mediamode 播放类型
+     * @param channelId 设备通道ID
+     * @param mediaMode 播放类型
      */
-    public byte[] stopResult(int cmdflag, int result, int channelid, int mediamode) {
-        APlatData.debugLog("DSPacket.clazz--->>>stopResult: cmdflag:" + cmdflag
-                + " result:" + result + " channelid:" + channelid
-                + " mediamode:" + mediamode);
-        packetHeader(cmdflag, APlatData.CMD_STOP_RESULT, (short) 1, (short) 1);
+    public byte[] stopResult(int cmdFlag, int result, int channelId, int mediaMode) {
+        APlatData.debugLog("DSPacket.clazz--->>>stopResult: cmdFlag:" + cmdFlag
+                + " result:" + result + " channelId:" + channelId
+                + " mediaMode:" + mediaMode);
+        packetHeader(cmdFlag, APlatData.CMD_STOP_RESULT, (short) 1, (short) 1);
         mByteInput.putInt(result);
-        mByteInput.putInt(channelid);
-        mByteInput.putInt(mediamode);
+        mByteInput.putInt(channelId);
+        mByteInput.putInt(mediaMode);
         return mByteInput.getCopyBytes();
     }
 
     /**
      * 呼叫通知请求
      *
-     * @param cmdflag    请求消息的用户数据，相应的回应消息回传该值
-     * @param roomnumber 房号
+     * @param cmdFlag    请求消息的用户数据，相应的回应消息回传该值
+     * @param roomNumber 房号
      */
-    public byte[] callRequest(int cmdflag, String roomnumber) {
-        APlatData.debugLog("DSPacket.clazz--->>>callRequest: cmdflag:" + cmdflag
-                + " roomnumber:" + roomnumber);
-        packetHeader(cmdflag, APlatData.CMD_CALL_REQUEST, (short) 1, (short) 1);
+    public byte[] callRequest(int cmdFlag, String roomNumber) {
+        APlatData.debugLog("DSPacket.clazz--->>>callRequest: cmdFlag:" + cmdFlag
+                + " roomNumber:" + roomNumber);
+        packetHeader(cmdFlag, APlatData.CMD_CALL_REQUEST, (short) 1, (short) 1);
 
-        int rnlength = roomnumber.length();
-        if (rnlength > APlatData.ROOM_NUMBER_LENGTH) {
+        int rnLength = roomNumber.length();
+        if (rnLength > APlatData.ROOM_NUMBER_LENGTH) {
             APlatData.debugLog("DSPacket.clazz--->>>callRequest: too long ROOM_NUMBER_LENGTH:"
-                    + rnlength);
+                    + rnLength);
             return null;
         }
 
-        mByteInput.putString(roomnumber);
-        for (int i = 0; i < (APlatData.ROOM_NUMBER_LENGTH - rnlength); i++) {
+        mByteInput.putString(roomNumber);
+        for (int i = 0; i < (APlatData.ROOM_NUMBER_LENGTH - rnLength); i++) {
             byte b = 0;
             mByteInput.putByte(b);
         }
@@ -119,61 +119,61 @@ public class DSPacket {
      * 发送音视频数据请求
      *
      * @param sink       音视频数据分包回调指针
-     * @param cmdflag    请求消息的用户数据，相应的回应消息回传该值
-     * @param channelid  设备通道ID
+     * @param cmdFlag    请求消息的用户数据，相应的回应消息回传该值
+     * @param channelId  设备通道ID
      * @param sequence   音视频数据总分片索引,第一个分片开始从1依次递增
-     * @param iskeyframe 是否为关键帧
-     * @param mediadata  音视频包
-     * @param datalen    音视频包长度
-     * @param audioflag  音视包标识
+     * @param isKeyFrame 是否为关键帧
+     * @param mediaData  音视频包
+     * @param dataLen    音视频包长度
+     * @param audioFlag  音视包标识
      */
-    public void sendMediaRequest(DSMediaPacketCallback sink, int cmdflag, int channelid,
-                                 int sequence, byte iskeyframe, byte[] mediadata,
-                                 int datalen, boolean audioflag) {
+    public void sendMediaRequest(DSMediaPacketCallback sink, int cmdFlag, int channelId,
+                                 int sequence, byte isKeyFrame, byte[] mediaData,
+                                 int dataLen, boolean audioFlag) {
         if (sink == null) {
             APlatData.debugLog("DSPacket.clazz--->>>sendMediaRequest sink is null");
             return;
         }
 
-        int max_onepktlength = APlatData.MAX_MEDIAREQUEST_LENGTH
+        int max_onePktLength = APlatData.MAX_MEDIAREQUEST_LENGTH
                 - APlatData.PACKET_HEADER_LENGTH - 13;
 
         // 单包发送
-        if (datalen <= max_onepktlength) {
-            short cmdid = APlatData.CMD_SENDMEDIA_REQUEST;
-            if (audioflag)
-                cmdid = APlatData.CMD_SENDMEDIA_REQUEST_EX;
-            packetHeader(cmdflag, cmdid, (short) 1, (short) 1);
-            mByteInput.putInt(channelid);
+        if (dataLen <= max_onePktLength) {
+            short cmdId = APlatData.CMD_SENDMEDIA_REQUEST;
+            if (audioFlag)
+                cmdId = APlatData.CMD_SENDMEDIA_REQUEST_EX;
+            packetHeader(cmdFlag, cmdId, (short) 1, (short) 1);
+            mByteInput.putInt(channelId);
             mByteInput.putInt(sequence);
-            mByteInput.putByte(iskeyframe);
-            if (audioflag)
+            mByteInput.putByte(isKeyFrame);
+            if (audioFlag)
                 mByteInput.putByte((byte) 0);
-            mByteInput.putInt(datalen);
-            mByteInput.putBytes(mediadata, 0, datalen);
+            mByteInput.putInt(dataLen);
+            mByteInput.putBytes(mediaData, 0, dataLen);
             sink.onMediaPacket(mByteInput.getBytes(), mByteInput.getLength());
             return;
         }
 
         // 分包发送
-        int totalseg = datalen / max_onepktlength;
-        if ((datalen % max_onepktlength) != 0) {
-            totalseg++;
+        int totalSeg = dataLen / max_onePktLength;
+        if ((dataLen % max_onePktLength) != 0) {
+            totalSeg++;
         }
-        for (int i = 0; i < totalseg; i++) {
-            int offset = i * max_onepktlength;
-            int byteslength = max_onepktlength;
-            if (i == (totalseg - 1)) {
-                byteslength = datalen - offset;
+        for (int i = 0; i < totalSeg; i++) {
+            int offset = i * max_onePktLength;
+            int bytesLength = max_onePktLength;
+            if (i == (totalSeg - 1)) {
+                bytesLength = dataLen - offset;
             }
-            short subseg = (short) (i + 1);
-            packetHeader(cmdflag, APlatData.CMD_SENDMEDIA_REQUEST,
-                    (short) totalseg, subseg);
-            mByteInput.putInt(channelid);
+            short subSeg = (short) (i + 1);
+            packetHeader(cmdFlag, APlatData.CMD_SENDMEDIA_REQUEST,
+                    (short) totalSeg, subSeg);
+            mByteInput.putInt(channelId);
             mByteInput.putInt(sequence);
-            mByteInput.putByte(iskeyframe);
-            mByteInput.putInt(byteslength);
-            mByteInput.putBytes(mediadata, offset, byteslength);
+            mByteInput.putByte(isKeyFrame);
+            mByteInput.putInt(bytesLength);
+            mByteInput.putBytes(mediaData, offset, bytesLength);
             sink.onMediaPacket(mByteInput.getBytes(), mByteInput.getLength());
         }
     }
@@ -181,11 +181,11 @@ public class DSPacket {
     /**
      * 发送音视频数据回应
      *
-     * @param cmdflag  与请求消息中cmdflag一致
+     * @param cmdFlag  与请求消息中cmdFlag一致
      * @param sequence 音视频数据总分片索引,第一个分片开始从1依次递增
      */
-    public byte[] sendMediaResult(int cmdflag, int sequence) {
-        packetHeader(cmdflag, APlatData.CMD_SENDMEDIA_RESULT, (short) 1,
+    public byte[] sendMediaResult(int cmdFlag, int sequence) {
+        packetHeader(cmdFlag, APlatData.CMD_SENDMEDIA_RESULT, (short) 1,
                 (short) 1);
         mByteInput.putInt(sequence);
         return mByteInput.getCopyBytes();
@@ -196,32 +196,32 @@ public class DSPacket {
     /**
      * 获取网口配置信息请求
      *
-     * @param cmdflag 请求消息的用户数据，相应的回应消息回传该值
+     * @param cmdFlag 请求消息的用户数据，相应的回应消息回传该值
      */
-    public byte[] getNetRequest(int cmdflag) {
-        APlatData.debugLog("DSPacket.class getNetRequest cmdflag:" + cmdflag);
-        packetHeader(cmdflag, APlatData.CMD_GETNET_REQUEST, (short) 1, (short) 1);
+    public byte[] getNetRequest(int cmdFlag) {
+        APlatData.debugLog("DSPacket.class getNetRequest cmdFlag:" + cmdFlag);
+        packetHeader(cmdFlag, APlatData.CMD_GETNET_REQUEST, (short) 1, (short) 1);
         return mByteInput.getCopyBytes();
     }
 
     /**
      * 设置网口配置信息请求
      *
-     * @param cmdflag  请求消息的用户数据，相应的回应消息回传该值
-     * @param netparam 网络参数
+     * @param cmdFlag  请求消息的用户数据，相应的回应消息回传该值
+     * @param netParam 网络参数
      */
-    public byte[] setNetRequest(int cmdflag, InfoNetParam netparam) {
-        APlatData.debugLog("DSPacket.clazz--->>>setNetRequest cmdflag:" + cmdflag);
-        packetHeader(cmdflag, APlatData.CMD_SETNET_REQUEST, (short) 1, (short) 1);
-        mByteInput.putByte(netparam.nettype);
-        mByteInput.putByte(netparam.ethaddrtype);
-        mByteInput.putInt(netparam.ethip);
-        mByteInput.putInt(netparam.ethmask);
-        mByteInput.putInt(netparam.defaultgw);
-        mByteInput.putByte(netparam.dnsaddrtype);
-        mByteInput.putInt(netparam.primarydns);
-        mByteInput.putInt(netparam.secondarydns);
-        byte[] mac = netparam.getMacAddress();
+    public byte[] setNetRequest(int cmdFlag, InfoNetParam netParam) {
+        APlatData.debugLog("DSPacket.clazz--->>>setNetRequest cmdFlag:" + cmdFlag);
+        packetHeader(cmdFlag, APlatData.CMD_SETNET_REQUEST, (short) 1, (short) 1);
+        mByteInput.putByte(netParam.nettype);
+        mByteInput.putByte(netParam.ethaddrtype);
+        mByteInput.putInt(netParam.ethip);
+        mByteInput.putInt(netParam.ethmask);
+        mByteInput.putInt(netParam.defaultgw);
+        mByteInput.putByte(netParam.dnsaddrtype);
+        mByteInput.putInt(netParam.primarydns);
+        mByteInput.putInt(netParam.secondarydns);
+        byte[] mac = netParam.getMacAddress();
         APlatData.debugLog("DSPacket.clazz--->>>setNetRequest mac:" + mac.length);
         for (int i = 0; i < mac.length; i++) {
             APlatData.debugLog("DSPacket.clazz--->>>setNetRequest mac[" + i + "]:"
@@ -234,13 +234,13 @@ public class DSPacket {
     /**
      * 挂断通话请求
      *
-     * @param cmdflag 请求消息的用户数据，相应的回应消息回传该值
+     * @param cmdFlag 请求消息的用户数据，相应的回应消息回传该值
      * @param reason  挂断的原因：1=用户强制挂断 2=软件超时挂断
      */
-    public byte[] handUpRequest(int cmdflag, int reason) {
-        APlatData.debugLog("DSPacket.clazz--->>>handUpRequest cmdflag:" + cmdflag
+    public byte[] handUpRequest(int cmdFlag, int reason) {
+        APlatData.debugLog("DSPacket.clazz--->>>handUpRequest cmdFlag:" + cmdFlag
                 + " reason:" + reason);
-        packetHeader(cmdflag, APlatData.CMD_HANGUP_REQUEST, (short) 1, (short) 1);
+        packetHeader(cmdFlag, APlatData.CMD_HANGUP_REQUEST, (short) 1, (short) 1);
         mByteInput.putInt(reason);
         return mByteInput.getCopyBytes();
     }
@@ -249,24 +249,24 @@ public class DSPacket {
     /**
      * 检查刷卡卡号请求
      *
-     * @param cmdflag    请求消息的用户数据，相应的回应消息回传该值
-     * @param cardnumber 卡号
+     * @param cmdFlag    请求消息的用户数据，相应的回应消息回传该值
+     * @param cardNumber 卡号
      * @return data 返回打包数据
      */
-    public byte[] isValidCardRequest(int cmdflag, String cardnumber) {
-        APlatData.debugLog("DSPacket.clazz--->>>isValidCardRequest: cmdflag:"
-                + cmdflag + " cardnumber:" + cardnumber);
-        packetHeader(cmdflag, APlatData.CMD_CARD_REQUEST, (short) 1, (short) 1);
+    public byte[] isValidCardRequest(int cmdFlag, String cardNumber) {
+        APlatData.debugLog("DSPacket.clazz--->>>isValidCardRequest: cmdFlag:"
+                + cmdFlag + " cardNumber:" + cardNumber);
+        packetHeader(cmdFlag, APlatData.CMD_CARD_REQUEST, (short) 1, (short) 1);
 
-        int cnlength = cardnumber.length();
-        if (cnlength > APlatData.CARD_NUMBER_LENGTH) {
+        int cnLength = cardNumber.length();
+        if (cnLength > APlatData.CARD_NUMBER_LENGTH) {
             APlatData.debugLog("DSPacket.clazz isValidCardRequest: too long CARD_NUMBER_LENGTH:"
-                    + cnlength);
+                    + cnLength);
             return null;
         }
 
-        mByteInput.putString(cardnumber);
-        for (int i = 0; i < (APlatData.CARD_NUMBER_LENGTH - cnlength); i++) {
+        mByteInput.putString(cardNumber);
+        for (int i = 0; i < (APlatData.CARD_NUMBER_LENGTH - cnLength); i++) {
             byte b = 0;
             mByteInput.putByte(b);
         }
@@ -277,39 +277,39 @@ public class DSPacket {
     /**
      * 检查开门密码请求
      *
-     * @param cmdflag    请求消息的用户数据，相应的回应消息回传该值
-     * @param roomnumber 房号
+     * @param cmdFlag    请求消息的用户数据，相应的回应消息回传该值
+     * @param roomNumber 房号
      * @param pwd        开门密码
      * @return data 返回打包数据
      */
-    public byte[] isValidPasswordRequest(int cmdflag, String roomnumber,
+    public byte[] isValidPasswordRequest(int cmdFlag, String roomNumber,
                                          String pwd) {
-        APlatData.debugLog("DSPacket.clazz--->>>isValidPasswordRequest: cmdflag:"
-                + cmdflag + " roomnumber:" + roomnumber + " pwd:" + pwd);
-        packetHeader(cmdflag, APlatData.CMD_PWD_REQUEST, (short) 1, (short) 1);
+        APlatData.debugLog("DSPacket.clazz--->>>isValidPasswordRequest: cmdFlag:"
+                + cmdFlag + " roomNumber:" + roomNumber + " pwd:" + pwd);
+        packetHeader(cmdFlag, APlatData.CMD_PWD_REQUEST, (short) 1, (short) 1);
 
-        int rnlength = roomnumber.length();
-        if (rnlength > APlatData.ROOM_NUMBER_LENGTH) {
+        int rnLength = roomNumber.length();
+        if (rnLength > APlatData.ROOM_NUMBER_LENGTH) {
             APlatData.debugLog("DSPacket.clazz isValidPasswordRequest: too long ROOM_NUMBER_LENGTH:"
-                    + rnlength);
+                    + rnLength);
             return null;
         }
 
-        mByteInput.putString(roomnumber);
-        for (int i = 0; i < (APlatData.ROOM_NUMBER_LENGTH - rnlength); i++) {
+        mByteInput.putString(roomNumber);
+        for (int i = 0; i < (APlatData.ROOM_NUMBER_LENGTH - rnLength); i++) {
             byte b = 0;
             mByteInput.putByte(b);
         }
 
-        int pwdlength = pwd.length();
-        if (pwdlength > APlatData.UNLOCK_PWD_LENGTH) {
+        int pwdLength = pwd.length();
+        if (pwdLength > APlatData.UNLOCK_PWD_LENGTH) {
             APlatData.debugLog("DSPacket.clazz isValidPasswordRequest: too long UNLOCK_PWD_LENGTH:"
-                    + pwdlength);
+                    + pwdLength);
             return null;
         }
 
         mByteInput.putString(pwd);
-        for (int i = 0; i < (APlatData.UNLOCK_PWD_LENGTH - pwdlength); i++) {
+        for (int i = 0; i < (APlatData.UNLOCK_PWD_LENGTH - pwdLength); i++) {
             byte b = 0;
             mByteInput.putByte(b);
         }
@@ -320,12 +320,12 @@ public class DSPacket {
     /**
      * 获取平台时间请求
      *
-     * @param cmdflag 请求消息的用户数据，相应的回应消息回传该值
+     * @param cmdFlag 请求消息的用户数据，相应的回应消息回传该值
      * @return data 返回打包数据
      */
-    public byte[] getTimestamp(int cmdflag) {
-        APlatData.debugLog("DSPacket.clazz--->>>getTimestamp: cmdflag:" + cmdflag);
-        packetHeader(cmdflag, APlatData.CMD_GET_TIMESTAMP_REQUEST, (short) 1, (short) 1);
+    public byte[] getTimestamp(int cmdFlag) {
+        APlatData.debugLog("DSPacket.clazz--->>>getTimestamp: cmdFlag:" + cmdFlag);
+        packetHeader(cmdFlag, APlatData.CMD_GET_TIMESTAMP_REQUEST, (short) 1, (short) 1);
         return mByteInput.getCopyBytes();
     }
 
@@ -365,40 +365,40 @@ public class DSPacket {
     /**
      * 拨打电话回应
      *
-     * @param cmdflag     请求消息的用户数据，相应的回应消息回传该值
-     * @param roomnumber  房号
-     * @param phonenumber 电话号码
+     * @param cmdFlag     请求消息的用户数据，相应的回应消息回传该值
+     * @param roomNumber  房号
+     * @param phoneNumber 电话号码
      * @param result      结果 0-开始拨打 1-正在响铃 2-已接通 3-通话结束 4-呼叫超时 5-通话超时
      * @return data 返回打包数据
      */
-    public byte[] phoneCallResult(int cmdflag, String roomnumber,
-                                  String phonenumber, int result) {
-        APlatData.debugLog("DSPacket.clazz--->>> phoneCallResult roomnumber:"
-                + roomnumber + " phonenumber:" + phonenumber + " result:"
+    public byte[] phoneCallResult(int cmdFlag, String roomNumber,
+                                  String phoneNumber, int result) {
+        APlatData.debugLog("DSPacket.clazz--->>> phoneCallResult roomNumber:"
+                + roomNumber + " phoneNumber:" + phoneNumber + " result:"
                 + result);
-        packetHeader(cmdflag, APlatData.CMD_PHONECALL_RESULT, (short) 1,
+        packetHeader(cmdFlag, APlatData.CMD_PHONECALL_RESULT, (short) 1,
                 (short) 1);
 
-        int rnlength = roomnumber.length();
-        if (rnlength > APlatData.ROOM_NUMBER_LENGTH) {
+        int rnLength = roomNumber.length();
+        if (rnLength > APlatData.ROOM_NUMBER_LENGTH) {
             APlatData.debugLog("DSPacket.clazz--->>>phoneCallResult: too long ROOM_NUMBER_LENGTH:"
-                    + rnlength);
+                    + rnLength);
             return null;
         }
-        mByteInput.putString(roomnumber);
-        for (int i = 0; i < (APlatData.ROOM_NUMBER_LENGTH - rnlength); i++) {
+        mByteInput.putString(roomNumber);
+        for (int i = 0; i < (APlatData.ROOM_NUMBER_LENGTH - rnLength); i++) {
             byte b = 0;
             mByteInput.putByte(b);
         }
 
-        int pnlength = phonenumber.length();
-        if (pnlength > APlatData.PHONE_NUMBER_LENGTH) {
+        int pnLength = phoneNumber.length();
+        if (pnLength > APlatData.PHONE_NUMBER_LENGTH) {
             APlatData.debugLog("DSPacket.clazz--->>>phoneCallResult: too long PHONE_NUMBER_LENGTH:"
-                    + pnlength);
+                    + pnLength);
             return null;
         }
-        mByteInput.putString(phonenumber);
-        for (int i = 0; i < (APlatData.PHONE_NUMBER_LENGTH - pnlength); i++) {
+        mByteInput.putString(phoneNumber);
+        for (int i = 0; i < (APlatData.PHONE_NUMBER_LENGTH - pnLength); i++) {
             byte b = 0;
             mByteInput.putByte(b);
         }
@@ -412,32 +412,31 @@ public class DSPacket {
      *
      * @return data 返回打包数据
      */
-    public byte[] unLockTypeResult(int cmdflag, int dataType, List<UnlockLogBean> unlocks) {
+    public byte[] unLockTypeResult(int cmdFlag, int dataType, List<UnlockLogBean> unlocks) {
+        int count;
         if (null == unlocks) {
+            count = 0;
             APlatData.debugLog("DSPacket.clazz--->>>unLockTypeResult UnlockLogBeans is null");
+        } else {
+            count = unlocks.size();
         }
-
-        int count = unlocks.size();
-        UnlockLogBean firstBean = unlocks.get(0);
-        int firstId = firstBean.getId().intValue();
-
-        APlatData.debugLog("DSPacket.clazz--->>>unLockTypeResult unlockCount:" + count
-                + ";firstBeanId:" + firstId);
-        packetHeader(firstId, APlatData.CMD_UNLOCKTYPE_REQUEST, (short) 1, (short) 1);
-        mByteInput.putInt(dataType);
-        mByteInput.putInt(count);
-        APlatData.debugLog("DSPacket.clazz unLockTypeResult ============:" + count
-                + ";firstBeanId:" + firstId);
+        APlatData.debugLog("DSPacket.clazz--->>>unLockTypeResult unlockCount:" + count);
+        if (dataType == APlatData.UNLOCK_TIME_DATA) {
+            packetHeader(cmdFlag, APlatData.CMD_UNLOCK_TYPE_TIME_DATA_REQUEST,
+                    (short) 1, (short) 1);
+        } else {
+            packetHeader(cmdFlag, APlatData.CMD_UNLOCK_TYPE_HISTORY_DATA_REQUEST,
+                    (short) 1, (short) 1);
+            mByteInput.putInt(count);
+        }
         for (int i = 0; i < count; i++) {
             UnlockLogBean bean = unlocks.get(i);
             APlatData.debugLog("DSPacket.clazz unLockTypeResult bean.getId():" + bean.getId());
+            mByteInput.putInt(bean.getId().intValue());
             mByteInput.putInt(bean.getUnlockType());
-            mByteInput.putInt(bean.getDeviceId());
-            mByteInput.putInt(bean.getRoomId());
-            mByteInput.putInt(bean.getUserId());
             int carNumLength = bean.getCardOrPhoneNum().length();
             if (carNumLength > APlatData.CARD_NUMBER_LENGTH) {
-                APlatData.debugLog("DSPacket.clazz unLockTypeResult: too long length:"
+                APlatData.debugLog("DSPacket.clazz unLockTypeResult:carNumLength too long length:"
                         + carNumLength);
                 return null;
             }
@@ -447,14 +446,25 @@ public class DSPacket {
                 mByteInput.putByte(b);
             }
             mByteInput.putInt(bean.getUnlockTime());
+            int roomNumLength = bean.getRoomNum().length();
+            if (roomNumLength > APlatData.ROOM_NUMBER_LENGTH) {
+                APlatData.debugLog("DSPacket.clazz unLockTypeResult:roomNumLength too long length:"
+                        + roomNumLength);
+                return null;
+            }
+            mByteInput.putString(bean.getRoomNum());
+            for (int j = 0; j < (APlatData.ROOM_NUMBER_LENGTH - roomNumLength); j++) {
+                byte b = 0;
+                mByteInput.putByte(b);
+            }
         }
         return mByteInput.getCopyBytes();
     }
 
-    public byte[] getRoomCardInfoRequest(int cmdflag, CopyOnWriteArraySet<Integer> roomIDSet) {
+    public byte[] getRoomCardInfoRequest(int cmdFlag, CopyOnWriteArraySet<Integer> roomIDSet) {
         ALinuxData.debugLog("DSPacket.clazz--->>>getRoomCardInfoRequest count:"
                 + roomIDSet.size());
-        packetHeader(cmdflag, APlatData.CMD_GET_ROOMCARD_INFO_REQUEST, (short) 1,
+        packetHeader(cmdFlag, APlatData.CMD_GET_ROOMCARD_INFO_REQUEST, (short) 1,
                 (short) 1);
         int count = 0;
         int cutIndex = mByteInput.getLength();
@@ -466,7 +476,7 @@ public class DSPacket {
                 mByteInput.putInt(roomId);
                 if (count < 10) {
                     ALinuxData.debugLog("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$roomId:"
-                            + roomId + ",it is first 10 roomid");
+                            + roomId + ",it is first 10 roomId");
                 }
                 count++;
             } else {
