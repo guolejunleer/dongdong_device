@@ -1,9 +1,10 @@
 package com.dongdong.prompt;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.PixelFormat;
+import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -12,7 +13,6 @@ import com.dongdong.AppConfig;
 import com.dongdong.DeviceApplication;
 import com.dongdong.base.BaseApplication;
 import com.dongdong.socket.normal.APlatData;
-import com.dongdong.ui.dialog.CommonDialog;
 import com.dongdong.utils.DDLog;
 import com.dongdong.utils.SPUtils;
 import com.dongdong.widget.RippleView;
@@ -27,52 +27,68 @@ import io.vov.vitamio.widget.VideoView;
  */
 public class KeyEventDialogManager {
 
-    private CommonDialog mNormalDialog;
-    private CommonDialog mQueryRoomDialog;
     private ImageView mIvDialog;
-    private Activity mActivity;
     private VideoView mVideoView;
 
     private RippleView mRippleLayout;
-    private final TextView mTvCountTime;//监控或对讲时间
+    private TextView mTvCountTime;//监控或对讲时间
+    private WindowManager mManager;
+    private WindowManager.LayoutParams mParams;// 窗口的属性
+    private boolean mDiaViewIsShow, mCallDiaViewIsShow;
+    private View mDiaView, mCallDiaView;
 
-    public KeyEventDialogManager(Activity activity, VideoView videoView) {
-        this.mActivity = activity;
+    private static KeyEventDialogManager mInstance;
+
+    private KeyEventDialogManager() {
+    }
+
+    public static KeyEventDialogManager getInstance() {
+        if (mInstance == null) {
+            synchronized (KeyEventDialogManager.class) {
+                if (mInstance == null)
+                    mInstance = new KeyEventDialogManager();
+            }
+        }
+        return mInstance;
+    }
+
+    public void initKeyEventDialogParams(Activity activity, VideoView videoView) {
+        if (mInstance == null) return;
+
+
         this.mVideoView = videoView;
+        mManager = (WindowManager) activity.getSystemService(
+                Context.WINDOW_SERVICE);
+        mParams = new WindowManager.LayoutParams();
+        mParams.format = PixelFormat.TRANSLUCENT;// 支持透明
+        mParams.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;// 焦点
+        mParams.width = WindowManager.LayoutParams.MATCH_PARENT;//窗口的宽和高
+        mParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        mParams.gravity = Gravity.CENTER;
+        mParams.x = 0;//窗口位置的偏移量
+        mParams.y = 0;
+
         //普通标识设备状态对话框
-        View diaView = View.inflate(activity, R.layout.device_normal_dialog_layout, null);
-        mIvDialog = (ImageView) diaView.findViewById(R.id.iv_device_dialog);
-        mTvCountTime = (TextView) diaView.findViewById(R.id.tv_count_time);
-        mNormalDialog = new CommonDialog(activity, R.style.dialog_transparent);
-        mNormalDialog.setContent(diaView);
-        Window normalWindow = mNormalDialog.getWindow();
-        if (normalWindow != null)
-            normalWindow.setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);//去焦点
+        mDiaView = View.inflate(BaseApplication.context(),
+                R.layout.device_normal_dialog_layout, null);
+        mIvDialog = (ImageView) mDiaView.findViewById(R.id.iv_device_dialog);
+        mTvCountTime = (TextView) mDiaView.findViewById(R.id.tv_count_time);
 
         // 呼叫房号后的对话框
-        View callDiaView = View.inflate(activity, R.layout.query_roomnumber_dialog_layout, null);
-        mRippleLayout = (RippleView) callDiaView.findViewById(R.id.ripple_view);
-        mQueryRoomDialog = new CommonDialog(activity, R.style.dialog_transparent);
-        mQueryRoomDialog.setContent(callDiaView);
-        Window queryWindow = mQueryRoomDialog.getWindow();
-        if (queryWindow != null)
-            queryWindow.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT);//去焦点
+        mCallDiaView = View.inflate(BaseApplication.context(),
+                R.layout.query_roomnumber_dialog_layout, null);
+        mRippleLayout = (RippleView) mCallDiaView.findViewById(R.id.ripple_view);
     }
 
     public void setTvCountTime(String time) {
-        if (mNormalDialog.isShowing()) {
-            String newTime = String.format(mActivity.getResources().
+        if (mDiaViewIsShow) {
+            String newTime = String.format(BaseApplication.context().getResources().
                     getString(R.string.second_sign), time);
             mTvCountTime.setText(newTime);
         }
     }
 
     void showQueryRoomDialog() {
-        if (mQueryRoomDialog.isShowing()) {
-            mQueryRoomDialog.dismiss();
-        }
         DeviceApplication.DEVICE_WORKING_STATUS = DeviceApplication.DEVICE_WORKING;
         DeviceApplication.isCallStatus = true;
         CountTimeRunnable.mCallOvertimeCount = 0;
@@ -81,31 +97,52 @@ public class KeyEventDialogManager {
             mRippleLayout.stop();
         }
         mRippleLayout.start();
-        mQueryRoomDialog.show();
+        removeDiaView();
+        removeCallDiaView();
+        if (!mCallDiaViewIsShow) {
+            mManager.addView(mCallDiaView, mParams);
+            mCallDiaViewIsShow = true;
+        }
     }
 
     public void showNormalDialog(int mipmap) {
-        if (mNormalDialog.isShowing()) {
-            mNormalDialog.dismiss();
-        }
         DeviceApplication.DEVICE_WORKING_STATUS = DeviceApplication.DEVICE_WORKING;
         mIvDialog.setImageResource(mipmap);
-        mNormalDialog.show();
-        mTvCountTime.setText("");
+        removeDiaView();
+        removeCallDiaView();
+        if (!mDiaViewIsShow) {
+            mTvCountTime.setText("");
+            mManager.addView(mDiaView, mParams);
+            mDiaViewIsShow = true;
+        }
+    }
+
+    private void removeDiaView() {
+        if (mDiaViewIsShow) {
+            mManager.removeView(mDiaView);
+        }
+        mDiaViewIsShow = false;
+    }
+
+    private void removeCallDiaView() {
+        if (mCallDiaViewIsShow) {
+            mManager.removeView(mCallDiaView);
+        }
+        mCallDiaViewIsShow = false;
     }
 
     /**
      * 关闭呼叫住户的对话框界面
      */
     public void dismissQueryRoomDialog() {
-        if (mQueryRoomDialog.isShowing()) {
+        if (mCallDiaViewIsShow) {
             DeviceApplication.DEVICE_WORKING_STATUS = DeviceApplication.DEVICE_FREE;
             DeviceApplication.isCallStatus = false;
             DeviceApplication.isYTXPhoneCall = false;
             mRippleLayout.stop();
 //            mMediaMusic.stopMusic();
             MediaMusicOfCall.stopMusic();
-            mQueryRoomDialog.dismiss();
+            removeCallDiaView();
         }
     }
 
@@ -113,13 +150,14 @@ public class KeyEventDialogManager {
      * 关闭设备一般状态对话框界面
      */
     public void dismissNormalDialog() {
-        if (mNormalDialog.isShowing()) {
+        if (mDiaViewIsShow) {
             DeviceApplication.DEVICE_WORKING_STATUS = DeviceApplication.DEVICE_FREE;
             DeviceApplication.isYTXPhoneCall = false;
 //            mMediaMusic.stopMusic();
             MediaMusicOfCall.stopMusic();
-            mNormalDialog.dismiss();
+            removeDiaView();
         }
+
     }
 
     public void setAdCurrVolume() {

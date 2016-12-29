@@ -106,11 +106,8 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
 
     public static boolean mIsALConnected;
 
-    private YTXPlayPhone mYTXPlayPhoneManager;
     private YTXAccountMessage mAccountMessage = new YTXAccountMessage();
 
-    private KeyEventManager mKeyEventManager;
-    private KeyEventDialogManager mKeyEventDialogManager;
 //    private MediaMusicOfCall mMediaMusic;
 
     private Search mSearchCast;
@@ -132,7 +129,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     /**
      * 执行时时任务
      */
-    public Handler mHandler = new Handler(Looper.getMainLooper()) {
+    public static Handler mHandler = new Handler(Looper.getMainLooper()) {
 
         @Override
         public void handleMessage(Message msg) {
@@ -147,20 +144,20 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
                                 getString(R.string.phone_calling_tip), remainTime);
                     }
                     DDLog.d("Launcher.clazz--->>>time:" + time + ",testType:" + testType);
-                    mKeyEventDialogManager.setTvCountTime(remainTime);
+                    KeyEventDialogManager.getInstance().setTvCountTime(remainTime);
                     if (time > AppConfig.MAX_TALKING_OR_MONITORING_TIME) {
                         DDLog.d("Launcher.clazz--->>>mHandler what 0 "
                                 + "timeout of 55s and auto handUp!!!");
-                        mKeyEventDialogManager.setAdCurrVolume();
-                        mKeyEventDialogManager.dismissNormalDialog();
+                        KeyEventDialogManager.getInstance().setAdCurrVolume();
+                        KeyEventDialogManager.getInstance().dismissNormalDialog();
                         DongDongCenter.handUp(2);
-                        mYTXPlayPhoneManager.hangUp();
+                        YTXPlayPhone.getInstance().hangUp();
                         CountTimeRunnable.stopTalkingOrMonitoring();
                     }
                     break;
                 case UPDATE_DIALOG_WHAT://按#号键后如果2秒内没收到linux回应，那么关闭对话框
-                    mKeyEventDialogManager.dismissQueryRoomDialog();
-                    mKeyEventManager.resetKeyboardEventStatus();
+                    KeyEventDialogManager.getInstance().dismissQueryRoomDialog();
+                    KeyEventManager.getInstance().resetKeyboardEventStatus();
                     String tip = BaseApplication.context().getString(R.string.call_room_failed)
                             + AppConfig.CALL_ROOM_UNCOMMINU_ERROR;
                     BaseApplication.showToast(tip);
@@ -218,19 +215,19 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
         mAccountMessage.setVendorPhone(vendorPhone);
 //        mMediaMusic = new MediaMusicOfCall(Launcher.this);
         MediaMusicOfCall.intPlayData(BaseApplication.context());
-        mKeyEventDialogManager = new KeyEventDialogManager(Launcher.this, mVideoView);
+        KeyEventDialogManager.getInstance().initKeyEventDialogParams(Launcher.this, mVideoView);
         DongDongCenter.getInstance().initSDK(Launcher.this);// 初始化sdk
         mReceiver = new NetBroadcastReceiver();//注册网络广播
         mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 
-        mYTXPlayPhoneManager = new YTXPlayPhone(Launcher.this, mKeyEventDialogManager);//拔打电话类
+        YTXPlayPhone.getInstance().initYTXPlayPhone(Launcher.this, KeyEventDialogManager.getInstance());
         if (mAccountMessage.getEffect()) {
-            mYTXPlayPhoneManager.setMessageInfo(mAccountMessage);
+            YTXPlayPhone.getInstance().setMessageInfo(mAccountMessage);
         }
-        mKeyEventManager = new KeyEventManager(Launcher.this, mKeyEventDialogManager,
-                mYTXPlayPhoneManager);
-        mKeyEventManager.setUIControlParams(mLlUnitDevice, mLlWallDevice, mLlWallDeviceDongHao,
-                mLlWallDeviceUnit, mLlWallDeviceRoomNum);
+        KeyEventManager.getInstance().initKeyEventManager(Launcher.this,
+                KeyEventDialogManager.getInstance(), YTXPlayPhone.getInstance());
+        KeyEventManager.getInstance().setUIControlParams(mLlUnitDevice, mLlWallDevice,
+                mLlWallDeviceDongHao, mLlWallDeviceUnit, mLlWallDeviceRoomNum);
         initTimer();// 初始化界面工作线程池
         DDLog.i("Launcher.clazz--->>> onCreate...............");
     }
@@ -311,14 +308,14 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
      */
     public void initAppStatus() {
         DeviceApplication.DEVICE_WORKING_STATUS = DeviceApplication.DEVICE_FREE;//设备处于空闲状态
-        CountTimeRunnable.isTalkingOrMonitoring = false;//设备处于非监控或者对讲状态
+//        CountTimeRunnable.isTalkingOrMonitoring = false;//设备处于非监控或者对讲状态
         DeviceApplication.isSystemSettingStatus = false;// true---系统设置状态  false--非系统设置状态
         DeviceApplication.isCallStatus = false;// 是否在呼叫状态
         DeviceApplication.isYTXPhoneCall = false;// 是否云通讯在打电话状态
     }
 
     public KeyEventManager getKeyboardEvents() {
-        return mKeyEventManager;
+        return KeyEventManager.getInstance();
     }
 
     private class NetBroadcastReceiver extends BroadcastReceiver {
@@ -374,7 +371,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
                         public void onPrepared(MediaPlayer mediaPlayer) {
                             mediaPlayer.setLooping(true);
                             DDLog.i("Launcher.clazz--->>>setOnPreparedListener!!!!!!!!!!!!!!!!  !!!!");
-                            mKeyEventDialogManager.setAdCurrVolume();
+                            KeyEventDialogManager.getInstance().setAdCurrVolume();
                         }
                     });
                     mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -415,9 +412,9 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     public int onPlayOrStopDevice(final int status) {// 呼叫回来的状态
         DDLog.i("Launcher.clazz*****************onPlayOrStopDevice status:"
                 + status);
-        mKeyEventManager.resetKeyboardEventStatus();
-        mKeyEventDialogManager.dismissQueryRoomDialog();
-        mKeyEventDialogManager.onPlayOrStopDevice(status);
+        KeyEventManager.getInstance().resetKeyboardEventStatus();
+        KeyEventDialogManager.getInstance().dismissQueryRoomDialog();
+        KeyEventDialogManager.getInstance().onPlayOrStopDevice(status);
         return 0;
     }
 
@@ -436,13 +433,13 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
         if (hasMessages) {
             mHandler.removeMessages(UPDATE_DIALOG_WHAT);
         }
-        mKeyEventManager.resetKeyboardEventStatus();
+        KeyEventManager.getInstance().resetKeyboardEventStatus();
         if (result != APlatData.RESULT_SUCCESS) {
             DeviceApplication.isCallStatus = false;
             CountTimeRunnable.mCallOvertime = callOvertime;
-            mKeyEventDialogManager.dismissQueryRoomDialog();
+            KeyEventDialogManager.getInstance().dismissQueryRoomDialog();
         }
-        mKeyEventDialogManager.onQueryRoomResult(result, roomNum, callOvertime);
+        KeyEventDialogManager.getInstance().onQueryRoomResult(result, roomNum, callOvertime);
     }
 
     /**
@@ -457,13 +454,13 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
         DDLog.i("Launcher.clazz onDialRequest phoneNum:" + phoneNum
                 + ",roomNum:" + roomNum);
         if (mAccountMessage.getEffect()) {
-            mKeyEventDialogManager.dismissQueryRoomDialog();
-            mKeyEventDialogManager.showNormalDialog(R.mipmap.calling_state);
+            KeyEventDialogManager.getInstance().dismissQueryRoomDialog();
+            KeyEventDialogManager.getInstance().showNormalDialog(R.mipmap.calling_state);
             DeviceApplication.isYTXPhoneCall = true;
             CountTimeRunnable.startTalkingOrMonitoring(AppConfig.MAX_TALKING_OR_MONITORING_TIME,
                     AppConfig.DIALOG_TEXT_DIAL);
-            mKeyEventDialogManager.setAdVolumeSilentVolume();
-            mYTXPlayPhoneManager.makeCall(roomNum, phoneNum);
+            KeyEventDialogManager.getInstance().setAdVolumeSilentVolume();
+            YTXPlayPhone.getInstance().makeCall(roomNum, phoneNum);
         } else {
             int deviceId = Integer.parseInt(DeviceInfoUtils.getDeviceID(getApplicationContext()));
             DDLog.i("Launcher.clazz onDialRequest AccountMessage is not effect " +
@@ -498,7 +495,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
         CountTimeRunnable.mKeyboardEventViewTimeCount = 0;
         DDLog.i("Launcher.clazz--->>>onUpdateNumberView str:" + str);
         if (!DeviceApplication.isSystemSettingStatus) {
-            mKeyEventManager.onUpdateNumberView(str);
+            KeyEventManager.getInstance().onUpdateNumberView(str);
         }
     }
 
@@ -512,7 +509,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     public void onCheckCardResult(int result, String cardNum) {
         DDLog.i("Launcher.clazz--->>>onCheckCardResult  result:" + result);
         CountTimeRunnable.isUnlocking = false;
-        mKeyEventManager.unlockRequest(result, AppConfig.UNLOCK_TYPE_PLATFORM_CARD, cardNum, "");
+        KeyEventManager.getInstance().unlockRequest(result, AppConfig.UNLOCK_TYPE_PLATFORM_CARD, cardNum, "");
     }
 
     /**
@@ -523,7 +520,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     @Override
     public void onPwdUnlock(int result) {
         DDLog.i("Launcher.clazz--->>>onPwdUnlock  result:" + result);
-        mKeyEventManager.unlockRequest(result, AppConfig.UNLOCK_TYPE_PASSWORD, "0", "");
+        KeyEventManager.getInstance().unlockRequest(result, AppConfig.UNLOCK_TYPE_PASSWORD, "0", "");
     }
 
     /**
@@ -536,7 +533,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     @Override
     public int onUnlockRequest(int unlockType, String cardOrPhoneNum, String roomNum) {
         DDLog.i("Launcher.clazz--->>>onUnlockRequest  unlockType:" + unlockType);
-        mKeyEventManager.unlockRequest(0, unlockType, cardOrPhoneNum, roomNum);
+        KeyEventManager.getInstance().unlockRequest(0, unlockType, cardOrPhoneNum, roomNum);
         return 0;
     }
 
@@ -548,7 +545,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     @Override
     public void onLocalCardUnlock(int unlockType, String cardNum) {
         DDLog.i("Launcher.clazz--->>>onLocalCardUnlock  unlockType:" + unlockType);
-        mKeyEventManager.unlockRequest(0, unlockType, cardNum, "");
+        KeyEventManager.getInstance().unlockRequest(0, unlockType, cardNum, "");
     }
 
     /**
@@ -575,9 +572,9 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     @Override
     public void onNoAnswered() {
         DDLog.i("Launcher.clazz--->>>onNoAnswered overtime!!!");
-        mKeyEventManager.nobodyAnswered();
-        mKeyEventDialogManager.setAdCurrVolume();
-        mKeyEventDialogManager.dismissQueryRoomDialog();
+        KeyEventManager.getInstance().nobodyAnswered();
+        KeyEventDialogManager.getInstance().setAdCurrVolume();
+        KeyEventDialogManager.getInstance().dismissQueryRoomDialog();
         CountTimeRunnable.stopTalkingOrMonitoring();
     }
 
@@ -586,7 +583,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
      */
     @Override
     public void resetKeyboardEventStatus() {
-        mKeyEventManager.resetKeyboardEventStatus();
+        KeyEventManager.getInstance().resetKeyboardEventStatus();
     }
 
     /**
@@ -595,7 +592,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     @Override
     public void phoneCallWaitTimeOut() {
         DDLog.i("Launcher.clazz phoneCallWaitTimeOut !!!");
-        mKeyEventDialogManager.dismissNormalDialog();
+        KeyEventDialogManager.getInstance().dismissNormalDialog();
     }
 
     /**
@@ -647,7 +644,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     @Override
     public void unLockTip() {
         DDLog.i("Launcher.clazz--->>>unLockTip");
-        mKeyEventManager.unlockRequest(APlatData.RESULT_FAILED,
+        KeyEventManager.getInstance().unlockRequest(APlatData.RESULT_FAILED,
                 AppConfig.UNLOCK_TYPE_PLATFORM_CARD, "", "");
     }
 
@@ -734,7 +731,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     @Override
     public int onStopPhoneCallRequest() {
         DDLog.i("Launcher.clazz onStopPhoneCallRequest !!!");
-        mYTXPlayPhoneManager.hangUp();
+        YTXPlayPhone.getInstance().hangUp();
         return 0;
     }
 
@@ -800,12 +797,12 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
             mAccountMessage.setAuthToken(appToken);
             mAccountMessage.setAppID(appKey);
             mAccountMessage.setVendorPhone(vendorPhone);
-            mYTXPlayPhoneManager.setMessageInfo(mAccountMessage);
+            YTXPlayPhone.getInstance().setMessageInfo(mAccountMessage);
         }
         DDLog.i("Launcher.clazz --->>>onGetYunTongXunInfo AccountMessage  =" + mAccountMessage);
         //初始化打电话配置
         if (mAccountMessage.getEffect()) {
-            mYTXPlayPhoneManager.startInitYTX();
+            YTXPlayPhone.getInstance().startInitYTX();
         }
         return 0;
     }
@@ -826,8 +823,8 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
             boolean setTimeState = SystemClock.setCurrentTimeMillis(nowDate.getTime());
             if (mVideoView != null) mVideoView.resume();
             //初始化打电话配置
-            if (mAccountMessage.getEffect() && !mYTXPlayPhoneManager.initializedYTX()) {
-                mYTXPlayPhoneManager.startInitYTX();
+            if (mAccountMessage.getEffect() && !YTXPlayPhone.getInstance().initializedYTX()) {
+                YTXPlayPhone.getInstance().startInitYTX();
             }
             DDLog.i("Launcher.clazz--->>>onGetTimestampResult is not today:"
                     + mAccountMessage + ",setTimeState:" + setTimeState);
@@ -835,7 +832,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
         String strTime = mDateFormat.get().format(nowDate);
         DDLog.i("Launcher.clazz--->>>onGetTimestampResult timeL: " + timeL
                 + ",isToday:" + isToday + ";strTime:" + strTime + ";initializedYTX:"
-                + mYTXPlayPhoneManager.initializedYTX() + ";nowDate:" + nowDate);
+                + YTXPlayPhone.getInstance().initializedYTX() + ";nowDate:" + nowDate);
         if (mTvPlatformTime != null) {
             mTvPlatformTime.setText(strTime);
         }
@@ -847,7 +844,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
      */
     @Override
     public int onGetHistoryUnLockRecordRequest() {
-        mKeyEventManager.getUnlockLog();
+        KeyEventManager.getInstance().getUnlockLog();
         return 0;
     }
 

@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.dongdong.AppConfig;
+import com.dongdong.DeviceApplication;
 import com.dongdong.base.BaseApplication;
 import com.dongdong.db.LocalCardOpe;
 import com.dongdong.db.UnlockLogOpe;
@@ -47,6 +48,8 @@ public class DongDongTransferCenter implements DeviceServiceCallback {
     private static final int DISABLE_PHONE_CALL_REQUEST_WHAT = 11;
     private static final int GET_TIMESTAMP_RESULT_WHAT = 12;
     private static final int LOCAL_UNLOCK_RECORD_REQUEST_WHAT = 13;
+    private static final int GET_VISITOR_PIC_CFG_RESULT_WHAT = 14;
+    private static final int SET_VISITOR_PIC_CFG_RESULT_WHAT = 15;
 
 
     private static final String RESULT = "result";
@@ -160,6 +163,22 @@ public class DongDongTransferCenter implements DeviceServiceCallback {
                     break;
                 case LOCAL_UNLOCK_RECORD_REQUEST_WHAT:
                     mLauncherCallback.onGetHistoryUnLockRecordRequest();
+                    break;
+                //下面接口为拓展Launcher响应Socket通信回调接口，一般用在回调者不是Launcher对象
+                case GET_VISITOR_PIC_CFG_RESULT_WHAT:
+                    int configure = msg.arg1;
+                    for (int i = 0; i < DeviceApplication.getExpandLauncherCallback().size(); i++) {
+                        DeviceApplication.getExpandLauncherCallback().get(i).
+                                onGetVisitorPicCfgResult(configure);
+                    }
+                    break;
+                case SET_VISITOR_PIC_CFG_RESULT_WHAT:
+                    int setCfgResult = msg.arg1;
+                    for (int i = 0; i < DeviceApplication.getExpandLauncherCallback().size(); i++) {
+                        DeviceApplication.getExpandLauncherCallback().get(i).
+                                onSetVisitorPicCfgResult(setCfgResult);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -376,4 +395,21 @@ public class DongDongTransferCenter implements DeviceServiceCallback {
         mHandler.sendMessage(msg);
         return 0;
     }
+
+    @Override
+    public int onGetVisitorPicCfgResult(int configure) {
+        Message msg = Message.obtain(mHandler, GET_VISITOR_PIC_CFG_RESULT_WHAT);
+        msg.arg1 = configure;
+        mHandler.sendMessage(msg);
+        return 0;
+    }
+
+    @Override
+    public int onSetVisitorPicCfgResult(int result) {
+        Message msg = Message.obtain(mHandler, SET_VISITOR_PIC_CFG_RESULT_WHAT);
+        msg.arg1 = result;
+        mHandler.sendMessage(msg);
+        return 0;
+    }
+
 }

@@ -16,6 +16,7 @@ import com.dongdong.db.DBManager;
 import com.dongdong.db.RoomCardOpe;
 import com.dongdong.db.entry.CardBean;
 import com.dongdong.db.entry.RoomCardBean;
+import com.dongdong.interf.ExpandLauncherCallback;
 import com.dongdong.prompt.KeyEventManager;
 import com.dongdong.socket.normal.APlatData;
 import com.dongdong.utils.DDLog;
@@ -61,7 +62,8 @@ public class DeviceApplication extends BaseApplication {
     public static int mRegStatus = 0;
 
     private KeyboardEventsBroadcastReceiver mKeyEventsReceiver;
-    private static List<OnKeyboardEventsChangeListener> mListeners = new ArrayList();
+    private static List<OnKeyboardEventsChangeListener> mListeners = new ArrayList<>();
+    private static List<ExpandLauncherCallback> mExpandLauncher = new ArrayList<>();
 
     public interface OnKeyboardEventsChangeListener {
 
@@ -98,6 +100,21 @@ public class DeviceApplication extends BaseApplication {
     public void onTerminate() {
         super.onTerminate();
         //unregisterReceiver(mKeyEventsReceiver);
+    }
+
+    public static synchronized void addExpandLauncherCallback(
+            ExpandLauncherCallback expandLauncher) {
+        if (!mExpandLauncher.contains(expandLauncher))
+            mExpandLauncher.add(expandLauncher);
+    }
+    public static synchronized List<ExpandLauncherCallback> getExpandLauncherCallback() {
+        return mExpandLauncher;
+    }
+
+    public static synchronized void removeExpandLauncherCallback(
+            ExpandLauncherCallback expandLauncher) {
+        if (mExpandLauncher.contains(expandLauncher))
+            mExpandLauncher.remove(expandLauncher);
     }
 
     public synchronized void addOnKeyboardEventsChangeListener(

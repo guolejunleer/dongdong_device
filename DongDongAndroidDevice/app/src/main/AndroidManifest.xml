@@ -33,6 +33,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:name="com.dongdong.DeviceApplication"
@@ -94,6 +95,12 @@
 
         <activity
             android:name="com.dongdong.ui.UnLockRecordActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name="com.dongdong.ui.SystemSettingActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name="com.dongdong.ui.ConfigSettingActivity"
             android:screenOrientation="landscape" />
         <activity
             android:name="io.vov.vitamio.activity.InitActivity"

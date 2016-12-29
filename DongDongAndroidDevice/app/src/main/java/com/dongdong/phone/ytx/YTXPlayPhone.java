@@ -55,7 +55,22 @@ public class YTXPlayPhone {
     private String mCurrentCallId;
     private YTXAccountMessage mAccountMessage;
 
-    public YTXPlayPhone(Context context, KeyEventDialogManager keyEventDialogManager) {
+    private static YTXPlayPhone mInstance;
+
+    private YTXPlayPhone() {
+    }
+
+    public static YTXPlayPhone getInstance() {
+        if (mInstance == null) {
+            synchronized (YTXPlayPhone.class) {
+                if (mInstance == null)
+                    mInstance = new YTXPlayPhone();
+            }
+        }
+        return mInstance;
+    }
+
+    public void initYTXPlayPhone(Context context, KeyEventDialogManager keyEventDialogManager) {
         mContext = context;
         mKeyEventDialogManager = keyEventDialogManager;
     }

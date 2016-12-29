@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EEE8AA"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/space_25">
+
+        <ImageView
+            android:id="@id/iv_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back_background"
+
+            android:contentDescription="@null" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/space_10"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/space_30">
+
+        <CheckBox
+            android:id="@+id/cb_calling"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@drawable/check"
+            android:checked="true"
+            android:text="@string/calling"
+            android:textSize="@dimen/text_size_16" />
+
+        <CheckBox
+            android:id="@+id/cb_app_answer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@drawable/check"
+            android:checked="true"
+            android:text="@string/app_answer"
+            android:textSize="@dimen/text_size_16" />
+
+        <CheckBox
+            android:id="@+id/cb_phone_answer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@drawable/check"
+            android:checked="true"
+            android:text="@string/phone_answer"
+            android:textSize="@dimen/text_size_16" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/space_10"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/space_30">
+
+        <CheckBox
+            android:id="@+id/cb_app_unlock"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@drawable/check"
+            android:text="@string/app_unlock"
+            android:textSize="@dimen/text_size_16" />
+
+        <CheckBox
+            android:id="@+id/cb_phone_unlock"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@drawable/check"
+            android:text="@string/phone_unlock"
+            android:textSize="@dimen/text_size_16" />
+
+        <CheckBox
+            android:id="@+id/cb_card_unlock"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@drawable/check"
+            android:text="@string/card_unlock"
+            android:textSize="@dimen/text_size_16" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/space_10"
+        android:paddingLeft="@dimen/space_30">
+
+
+        <CheckBox
+            android:id="@+id/cb_pwd_unlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:button="@drawable/check"
+            android:text="@string/pwd_unlock"
+            android:textSize="@dimen/text_size_16" />
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/bt_sure"
+        android:layout_width="260dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/space_20"
+        android:background="@drawable/shape"
+        android:text="@string/button_sure"
+        android:textColor="#808000"
+        android:textSize="@dimen/text_size_32" />
+</LinearLayout>

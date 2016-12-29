@@ -86,6 +86,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_marginTop="@dimen/space_30"
             android:contentDescription="@null"
             android:scaleType="fitCenter"
             android:src="@drawable/select_phone_ebtn" />

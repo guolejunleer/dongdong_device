@@ -179,4 +179,15 @@ public interface DeviceServiceCallback {
      */
     int onGetHistoryUnLockRecordRequest();
 
+    /**
+     *获取访客留影配置回应
+     *
+     */
+    int onGetVisitorPicCfgResult(int configure);
+
+    /**
+     *设置访客留影配置回应
+     *
+     */
+    int onSetVisitorPicCfgResult(int result);
 }

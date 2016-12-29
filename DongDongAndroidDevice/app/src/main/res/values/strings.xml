@@ -117,4 +117,15 @@
     <string name="second">秒</string>
     <string name="search">查询条件</string>
     <string name="all">全部</string>
+    <string name="user_setting">用户设置</string>
+    <string name="config_setting">配置设置</string>
+    <string name="calling">云呼叫</string>
+    <string name="app_answer">App接听</string>
+    <string name="phone_answer">电话接听</string>
+    <string name="app_unlock">App开锁</string>
+    <string name="phone_unlock">电话开锁</string>
+    <string name="card_unlock">刷卡开锁</string>
+    <string name="pwd_unlock">密码开锁</string>
+    <string name="success_setting">设置成功</string>
+    <string name="fail_setting">设置失败,请确定第一行三项全部选中</string>
 </resources>

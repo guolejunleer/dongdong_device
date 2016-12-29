@@ -140,6 +140,12 @@ public class DSParse {
             case APlatData.CMD_GET_ROOMCARD_INFO_RESULT:
                 onGetRoomCardInfoResult();
                 break;
+            case APlatData.CMD_GET_VISITOR_PIC_CFG_RESULT:
+                onGetVisitorPicCfgResult();
+                break;
+            case APlatData.CMD_SET_VISITOR_PIC_CFG_RESULT:
+                onSetVisitorPicCfg();
+                break;
             default:
                 APlatData.debugLog("DsParse.clazz no match cmdId:"
                         + cmdId);
@@ -774,6 +780,41 @@ public class DSParse {
                 + ";result:" + result + ";unLockIndex:" + unLockIndex);
         if (mCallback != null) {
             mCallback.onUnlockStateResult(result, 1, unLockIndexList);
+        }
+        return 0;
+    }
+    /**
+     * 24.获取访客留影配置回应
+     */
+    private int onGetVisitorPicCfgResult() {
+        int remainLen = mByteOutput.getRemainDataLength();
+        if (remainLen < 4) {
+            APlatData.debugLog("DSParse.clazz onGetVisitorPicCfgResult get  result short:"
+                    + remainLen);
+            return -1;
+        }
+        int configure = mByteOutput.getInt();
+        APlatData.debugLog("DSParse.clazz onGetVisitorPicCfgResult configure:" + configure);
+        if (mCallback != null) {
+            mCallback.onGetVisitorPicCfgResult(configure);
+        }
+        return 0;
+    }
+
+    /**
+     * 25.设置访客留影配置回应
+     */
+    private int onSetVisitorPicCfg() {
+        int remainLen = mByteOutput.getRemainDataLength();
+        if (remainLen < 4) {
+            APlatData.debugLog("DSParse.clazz onSetVisitorPicCfg get  result short:"
+                    + remainLen);
+            return -1;
+        }
+        int result = mByteOutput.getInt();
+        APlatData.debugLog("DSParse.clazz onGetVisitorPicCfgResult result:" + result);
+        if (mCallback != null) {
+            mCallback.onSetVisitorPicCfgResult(result);
         }
         return 0;
     }

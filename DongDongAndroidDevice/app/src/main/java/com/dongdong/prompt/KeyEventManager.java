@@ -62,7 +62,22 @@ public class KeyEventManager {
 
     private boolean isInputPwdStatus = false;//是否为密码输入状态
 
-    public KeyEventManager(Context context, KeyEventDialogManager kdm, YTXPlayPhone phone) {
+    private static KeyEventManager mInstance;
+
+    private KeyEventManager() {
+    }
+
+    public static KeyEventManager getInstance() {
+        if (mInstance == null) {
+            synchronized (KeyEventManager.class) {
+                if (mInstance == null)
+                    mInstance = new KeyEventManager();
+            }
+        }
+        return mInstance;
+    }
+
+    public void  initKeyEventManager(Context context, KeyEventDialogManager kdm, YTXPlayPhone phone) {
         this.mContext = context;
         this.mKeyEventDialogManager = kdm;
         this.mYTXPlayPhoneManager = phone;
@@ -116,7 +131,7 @@ public class KeyEventManager {
                                 mKeyboardNumber = numberLen == 3 ? "0" + mKeyboardNumber
                                         : mKeyboardNumber;
                                 DongDongCenter.queryRoomNumber(mKeyboardNumber);
-                                ((Launcher) mContext).mHandler.sendEmptyMessageDelayed(
+                                Launcher.mHandler.sendEmptyMessageDelayed(
                                         Launcher.UPDATE_DIALOG_WHAT, 2 * 1000);
                                 DDLog.i("KeyEventManager.clazz---->># wall " +
                                         "sendEmptyMessageDelayed and queryRoomNumber");
@@ -134,7 +149,7 @@ public class KeyEventManager {
                                 mKeyboardNumber = numberLen == 3 ? "0" + mKeyboardNumber
                                         : mKeyboardNumber;
                                 DongDongCenter.queryRoomNumber(mKeyboardNumber);
-                                ((Launcher) mContext).mHandler.sendEmptyMessageDelayed(
+                                Launcher.mHandler.sendEmptyMessageDelayed(
                                         Launcher.UPDATE_DIALOG_WHAT, 2 * 1000);
                                 DDLog.i("KeyEventManager.clazz---->># unit " +
                                         "sendEmptyMessageDelayed and queryRoomNumber");

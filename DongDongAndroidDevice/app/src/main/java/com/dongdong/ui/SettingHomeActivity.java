@@ -138,8 +138,8 @@ public class SettingHomeActivity extends Activity implements OnKeyboardEventsCha
             case R.id.iv_net_setting://跳转选择设置网卡界面
                 netSettings();
                 break;
-            case R.id.iv_user_setting://跳转用户设置界面
-                this.startActivity(new Intent(this, UserSettingActivity.class));
+            case R.id.iv_user_setting://跳转系统设置界面
+                this.startActivity(new Intent(this, SystemSettingActivity.class));
                 break;
             case R.id.iv_card_setting://跳转卡号设置界面
                 this.startActivity(new Intent(this, CardManagementActivity.class));

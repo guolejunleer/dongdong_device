@@ -290,6 +290,61 @@ public class DongDongCenter {
         }
     }
 
+    /**
+     * 获取访客留影配置
+     */
+    public static void getVisitorPicCfg() {
+        SocketThreadManager.startSocketThread(new Runnable() {
+
+            @Override
+            public void run() {
+                UdpClientSocket client;
+                String serverHost = AppConfig.SERVER_HOST_IP;
+                int serverPort = 45611;
+                try {
+                    client = new UdpClientSocket();
+                    DSPacket packet = new DSPacket();
+                    byte[] callPkt = packet.getVisitorPicCfgRequest(0);
+                    if (callPkt == null) {
+                        return;
+                    }
+                    client.send(serverHost, serverPort, callPkt, callPkt.length);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, "getVisitorPicCfg");
+    }
+
+    /**
+     * 设置访客留影配置
+     */
+    public static void setVisitorPicCfg(final int configure) {
+        SocketThreadManager.startSocketThread(new Runnable() {
+
+            @Override
+            public void run() {
+                UdpClientSocket client;
+                String serverHost = AppConfig.SERVER_HOST_IP;
+                int serverPort = 45611;
+                try {
+                    client = new UdpClientSocket();
+                    DSPacket packet = new DSPacket();
+                    byte[] callPkt = packet.setVisitorPicCfgRequest(0, configure);
+                    if (callPkt == null) {
+                        return;
+                    }
+                    client.send(serverHost, serverPort, callPkt, callPkt.length);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, "setVisitorPicCfg");
+    }
+
+
     // ///////////////////////////////////////////////////////////////////////////////////
     private class OrdinarySocketThread extends Thread {
 
@@ -310,7 +365,7 @@ public class DongDongCenter {
 
     private class SoundSocketThread extends Thread {
 
-         SoundSocketThread(String ddSoundThread) {
+        SoundSocketThread(String ddSoundThread) {
             super(ddSoundThread);
         }
 
