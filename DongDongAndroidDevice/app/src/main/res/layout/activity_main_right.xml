@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
             android:layout_gravity="center"
             android:contentDescription="@null"
             android:padding="10dp"
-            android:src="@mipmap/operation" />
+            android:src="@mipmap/operation"/>
     </LinearLayout>
 
     <LinearLayout
@@ -38,7 +38,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="5dp"
                 android:contentDescription="@null"
-                android:src="@mipmap/setting_icon1_0" />
+                android:src="@mipmap/setting_icon1_0"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -46,18 +46,16 @@
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="10dp"
                 android:text="@string/property_tip"
-                android:textSize="20sp" />
+                android:textSize="20sp"/>
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rl_bulletin"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="20dp"
-            android:text="@string/door_ad_tip"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="10dp"/>
 
         <Button
             android:id="@+id/bt_test_right"
@@ -70,7 +68,7 @@
             android:text="测试001"
             android:textColor="@android:color/white"
             android:textSize="18sp"
-            android:visibility="invisible" />
+            android:visibility="invisible"/>
 
         <Button
             android:id="@+id/bt_test_left"
@@ -83,7 +81,7 @@
             android:text="测试002"
             android:textColor="@android:color/white"
             android:textSize="18sp"
-            android:visibility="invisible" />
+            android:visibility="invisible"/>
     </LinearLayout>
 
 </LinearLayout>

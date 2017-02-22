@@ -1,7 +1,5 @@
 package com.dongdong.socket.beat;
 
-import com.jr.door.Launcher;
-
 public class Search {
 
     /**
@@ -48,7 +46,7 @@ public class Search {
 
         try {
             Packet pkt = new Packet();
-            byte[] bytes = pkt.scanReponese(0);
+            byte[] bytes = pkt.scanResponse(0);
             if (bytes != null) {
                 mMulHandle.sendtoGroup(bytes);
             }
@@ -126,7 +124,7 @@ public class Search {
                 while (mMulticastRunFlag) {
                     if (mSendScanResponse) {
                         Packet pkt = new Packet();
-                        byte[] bytes = pkt.scanReponese(0);
+                        byte[] bytes = pkt.scanResponse(0);
                         if (bytes != null) {
                             mMulHandle.sendtoGroup(bytes);
                         }

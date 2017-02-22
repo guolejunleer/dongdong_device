@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -98,7 +99,7 @@ public class DeviceInfoUtils {
                             SPUtils.setParam(context, SPUtils.DD_CONFIG_SHARE_PREF_NAME,
                                     SPUtils.SP_KEY_DEVICE_MODE, result);
                         }
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -283,11 +284,11 @@ public class DeviceInfoUtils {
     }
 
     public static int getStatusBarHeight(Context context) {
-        Class<?> clazz ;
+        Class<?> clazz;
 
-        Object obj ;
+        Object obj;
 
-        Field field ;
+        Field field;
 
         int x, sBar = 0;
 
@@ -304,5 +305,10 @@ public class DeviceInfoUtils {
         return sBar;
     }
 
+    public static boolean isInMainThread() {
+        Looper myLooper = Looper.myLooper();
+        Looper mainLooper = Looper.getMainLooper();
+        return myLooper == mainLooper;
+    }
 
 }

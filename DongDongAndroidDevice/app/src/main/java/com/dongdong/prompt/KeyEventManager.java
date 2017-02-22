@@ -77,7 +77,7 @@ public class KeyEventManager {
         return mInstance;
     }
 
-    public void  initKeyEventManager(Context context, KeyEventDialogManager kdm, YTXPlayPhone phone) {
+    public void initKeyEventManager(Context context, KeyEventDialogManager kdm, YTXPlayPhone phone) {
         this.mContext = context;
         this.mKeyEventDialogManager = kdm;
         this.mYTXPlayPhoneManager = phone;
@@ -454,6 +454,7 @@ public class KeyEventManager {
                               final String cardOrPhonedNum, final String roomNum) {
         if (result == APlatData.RESULT_SUCCESS) {
             JRService.JRUnlock();
+//            DeviceApplication.m_rkctrl.exec_io_cmd(6, 1);//打开继电器控制电磁锁
             mSound.opendoorSucc(true);
             BaseApplication.showToast(R.string.open_door);
             DDLog.i("KeyEventManager.clazz unlockRequest--->>> getUnlockNameByType:" + unLockType

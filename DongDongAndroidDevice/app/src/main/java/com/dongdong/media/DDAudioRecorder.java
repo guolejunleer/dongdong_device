@@ -1,20 +1,18 @@
 package com.dongdong.media;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 
 import com.dongdong.AppConfig;
 import com.dongdong.sdk.DongDongTransferCenter.GsmCoderCallback;
-import com.dongdong.utils.DDLog;
-import com.jr.GemvaryGs;
-
 import com.dongdong.socket.normal.DSPacket;
 import com.dongdong.socket.normal.UdpClientSocket;
+import com.dongdong.utils.DDLog;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class DDAudioRecorder implements GsmCoderCallback, DSPacket.DSMediaPacketCallback {
 
@@ -35,7 +33,7 @@ public class DDAudioRecorder implements GsmCoderCallback, DSPacket.DSMediaPacket
     private int sequence = 0;
     private final int serverVideoPort = 45613;
 
-    private boolean recorderMode = false;
+    private boolean recorderMode = true;
     private InputStream mMicrophone;
     private ByteArrayOutputStream mBaos;
     public boolean isFirst = true;
@@ -101,8 +99,8 @@ public class DDAudioRecorder implements GsmCoderCallback, DSPacket.DSMediaPacket
                 isRecording = true;
                 isFirst = true;
                 mBaos = new ByteArrayOutputStream(8000 * 2 * 20);
-                mMicrophone = GemvaryGs.getInstance().GSgetMicInputStream(8000,
-                        8000 * 15);
+//                mMicrophone = GemvaryGs.getInstance().GSgetMicInputStream(8000,
+//                        8000 * 15);
                 gsmThread = new GsmThread();
                 gsmThread.start();
             }
@@ -163,8 +161,8 @@ public class DDAudioRecorder implements GsmCoderCallback, DSPacket.DSMediaPacket
 
                         try {
                             int rtn;
-                            rtn = GemvaryGs.getInstance().read(buffer, 0,
-                                    AUDIO_DATA_SIZE);
+//                            rtn = GemvaryGs.getInstance().read(buffer, 0,
+//                                    AUDIO_DATA_SIZE);
                             // our code
                             DDAudioRecorder.this.audioRecord(buffer);
                             nowTime = (int) System.currentTimeMillis() / 1000;
@@ -179,8 +177,8 @@ public class DDAudioRecorder implements GsmCoderCallback, DSPacket.DSMediaPacket
                                 }
                             }
                             preTime = nowTime;
-                            if (rtn > 0)
-                                mBaos.write(buffer, 0, rtn);
+//                            if (rtn > 0)
+//                                mBaos.write(buffer, 0, rtn);
 
                         } catch (Exception e) {
                             DDLog.e("DDAudioRecorder.clazz$GsmThread.class run-->>>GemvaryGs no_room:"

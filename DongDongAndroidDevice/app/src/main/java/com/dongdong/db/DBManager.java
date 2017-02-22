@@ -17,7 +17,7 @@ public class DBManager {
 
     private static final String DB_NAME = "dongdong.db";
     private static DBManager mDbManager;
-    private static DaoMaster.DevOpenHelper mDevOpenHelper;
+    //    private static DaoMaster.DevOpenHelper mDevOpenHelper;
     private static DaoMaster mDaoMaster;
     private static DaoSession mDaoSession;
 
@@ -26,9 +26,9 @@ public class DBManager {
     private DBManager(Context context) {
         this.mContext = context;
         // 初始化数据库信息
-        mDevOpenHelper = new DaoMaster.DevOpenHelper(context, DB_NAME);
-        getDaoMaster(context);
-        getDaoSession(context);
+//        mDevOpenHelper = new DaoMaster.DevOpenHelper(context, DB_NAME);
+//        getDaoMaster(context);
+//        getDaoSession(context);
     }
 
     public static DBManager getInstance(Context context) {
@@ -48,12 +48,12 @@ public class DBManager {
      * @param context 上下文
      * @return 可读数据库引用
      */
-    public static SQLiteDatabase getReadableDatabase(Context context) {
-        if (null == mDevOpenHelper) {
-            getInstance(context);
-        }
-        return mDevOpenHelper.getReadableDatabase();
-    }
+//    public static SQLiteDatabase getReadableDatabase(Context context) {
+//        if (null == mDevOpenHelper) {
+//            getInstance(context);
+//        }
+//        return mDevOpenHelper.getReadableDatabase();
+//    }
 
     /**
      * 获取可写数据库
@@ -61,12 +61,12 @@ public class DBManager {
      * @param context 上下文
      * @return 可写数据库引用
      */
-    public static SQLiteDatabase getWritableDatabase(Context context) {
-        if (null == mDevOpenHelper) {
-            getInstance(context);
-        }
-        return mDevOpenHelper.getWritableDatabase();
-    }
+//    public static SQLiteDatabase getWritableDatabase(Context context) {
+//        if (null == mDevOpenHelper) {
+//            getInstance(context);
+//        }
+//        return mDevOpenHelper.getWritableDatabase();
+//    }
 
     /**
      * 获取DaoMaster
@@ -78,7 +78,10 @@ public class DBManager {
         if (null == mDaoMaster) {
             synchronized (DBManager.class) {
                 if (null == mDaoMaster) {
-                    mDaoMaster = new DaoMaster(getWritableDatabase(context));
+//                    mDaoMaster = new DaoMaster(getWritableDatabase(context));
+                    MySQLiteOpenHelper helper = new MySQLiteOpenHelper(context, DB_NAME,
+                            null);
+                    mDaoMaster = new DaoMaster(helper.getWritableDatabase());
                 }
             }
         }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_detailTitle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/text_size_20"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="我的物业公告"
+        android:textSize="@dimen/text_size_20"/>
+
+    <TextView
+        android:id="@+id/tv_detailNotice"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/text_size_20"
+        android:gravity="center"
+        android:layout_weight="16"
+        android:text="尊敬的广大业主们:
+　　按照x花园第三次业主大会决议,北京x物业管理有限公司自20XX年9月17日起已经接管本小区物业服务管理工作,迄今已经有两个月,业委会的主要工作也已经随之过渡到对现物业公司的监督上。为使广大业主及时了解本小区的实际情况,今后业委会将定期将各方面情况向广大业主通报,请广大业主监督。
+"
+        android:textSize="@dimen/text_size_20"/>
+
+    <TextView
+        android:id="@+id/tv_detailCreated"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/text_size_20"
+        android:layout_weight="1"
+        android:gravity="end"
+        android:text="2017-01-06 17:59:30"
+        android:textSize="@dimen/text_size_20"/>
+</LinearLayout>

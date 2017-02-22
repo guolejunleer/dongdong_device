@@ -8,7 +8,15 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 import cz.msebera.android.httpclient.client.params.ClientPNames;
 
@@ -23,6 +31,13 @@ public class ApiHttpClient {
     public static final String POST = "POST";
     public static final String PUT = "PUT";
     public static AsyncHttpClient client;
+
+    // 正式服务器
+    private static String API_KEY = "P4VenrKw5aam6sREotky";
+    private static String SECRET_KEY = "1bvNOGryv3IPq0fwICBH";
+    // 测试服务器(55)
+//    private static String API_KEY = "po8ujkvNjIm5hcoxtbp4";
+//    private static String SECRET_KEY = "UspRzPUcEytfcwR3N56k";
 
     public ApiHttpClient() {
     }
@@ -93,7 +108,8 @@ public class ApiHttpClient {
     public static void postDirect(String url, RequestParams params,
                                   AsyncHttpResponseHandler handler) {
         client.post(url, params, handler);
-        log(new StringBuilder("POST ").append(url).append("&").append(params)
+        log(new StringBuilder("POST ").append(url).append("&").append(params).toString());
+        Log.e("GT", new StringBuilder("POST ").append(url).append("&").append(params)
                 .toString());
     }
 
@@ -142,4 +158,100 @@ public class ApiHttpClient {
 //        }
 //        return appCookie;
 //    }
+
+    private static class MapKeyComparator implements Comparator<String> {
+        @Override
+        public int compare(String str1, String str2) {
+            return str1.compareTo(str2);
+        }
+    }
+
+    /**
+     * 使用 Map按key进行排序
+     */
+    private static Map<String, String> sortMapByKey(Map<String, String> map) {
+        if (map == null || map.isEmpty()) {
+            return null;
+        }
+        Map<String, String> sortMap = new TreeMap<>(
+                new MapKeyComparator());
+        sortMap.putAll(map);
+        return sortMap;
+    }
+
+    /**
+     * 获取签名
+     */
+    private static String getSign(String url, Map<String, String> params,
+                                  String encode) {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("POST").append(url);
+        Map<String, String> sortParams = sortMapByKey(params);
+        try {
+            for (Map.Entry<String, String> entry : sortParams.entrySet()) {
+                stringBuffer.append(entry.getKey()).append("=")
+                        .append(URLEncoder.encode(entry.getValue(), encode));
+            }
+            stringBuffer.append(SECRET_KEY);
+            return getMd5(URLEncoder.encode(stringBuffer.toString(), encode));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    /**
+     * md5加密
+     */
+    private static String getMd5(String plainText) {
+        try {
+            StringBuffer buf = new StringBuffer("");
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(plainText.getBytes());
+            for (int i : md.digest()) {
+                if (i < 0)
+                    i += 256;
+                if (i < 16)
+                    buf.append("0");
+                buf.append(Integer.toHexString(i));
+            }
+            // 32位加密
+            return buf.toString();
+            // 16位加密
+            // return buf.toString().substring(8, 24);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    /**
+     * 获取物业公告的参数
+     */
+    public static RequestParams getDVNotices(String url, int deviceId, int offset, int size) {
+        Calendar calendar = Calendar.getInstance();
+        RequestParams params = new RequestParams();
+        params.put("apikey", API_KEY);
+        params.put("timestamp", "" + calendar.getTimeInMillis() / 1000);
+        params.put("id", "435");
+        params.put("method", "getDVNotices");
+        params.put("deviceid", deviceId);
+        params.put("offset", offset);
+        params.put("size", size);
+
+        Map<String, String> map = new HashMap<>();
+        map.put("apikey", API_KEY);
+        map.put("timestamp", "" + calendar.getTimeInMillis() / 1000);
+        map.put("id", "435");
+        map.put("method", "getDVNotices");
+        map.put("deviceid", String.valueOf(deviceId));
+        map.put("offset", String.valueOf(offset));
+        map.put("size", String.valueOf(size));
+
+        String sign = getSign(url, map, "utf-8");
+        Log.e("GT", "ApiHttpClient.clazz-->getDVNotices()-->sign:" + sign);
+        params.put("sign", sign);
+
+        return params;
+    }
 }

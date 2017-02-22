@@ -14,18 +14,33 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.dongdong.AppConfig;
 import com.dongdong.DeviceApplication;
 import com.dongdong.DeviceApplication.OnKeyboardEventsChangeListener;
+import com.dongdong.adapter.BulletinAdapter;
+import com.dongdong.api.ApiHttpClient;
 import com.dongdong.base.BaseApplication;
+import com.dongdong.db.BulletinOpe;
+import com.dongdong.db.entry.BulletinBean;
 import com.dongdong.interf.LauncherCallback;
 import com.dongdong.interf.TimerCallback;
 import com.dongdong.phone.ytx.YTXAccountMessage;
@@ -48,23 +63,34 @@ import com.dongdong.utils.NetUtils;
 import com.dongdong.utils.SPUtils;
 import com.dongdong.utils.TimeZoneUtil;
 import com.dongdong.utils.TimerTaskManager;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.tencent.stat.StatConfig;
 import com.tencent.stat.StatReportStrategy;
 import com.tencent.stat.StatService;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import cz.msebera.android.httpclient.Header;
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.MediaPlayer.OnErrorListener;
 import io.vov.vitamio.Vitamio;
 import io.vov.vitamio.widget.VideoView;
+
+import static com.dongdong.api.ApiHttpClient.getDVNotices;
 
 /**
  * 启动界面，负责所有事务回调
@@ -96,8 +122,11 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
 
     @BindView(R.id.surface_view)
     VideoView mVideoView;
-//    @BindView(R.id.ad_view_pager)
-//    AdViewPager mViewPager;
+    //@BindView(R.id.ad_view_pager)
+    //AdViewPager mViewPager;
+
+    @BindView(R.id.rl_bulletin)
+    RecyclerView mRvBulletin;
 
     @BindView(R.id.bt_test_right)
     Button mBtTestLeft;
@@ -105,10 +134,12 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     Button mBtTestRight;
 
     public static boolean mIsALConnected;
+    private List<BulletinBean> mBeanList = new ArrayList<>();
+    private BulletinAdapter mBulletinAdapter;
 
     private YTXAccountMessage mAccountMessage = new YTXAccountMessage();
 
-//    private MediaMusicOfCall mMediaMusic;
+    //private MediaMusicOfCall mMediaMusic;
 
     private Search mSearchCast;
     private NetBroadcastReceiver mReceiver;
@@ -127,7 +158,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     public static final int UPDATE_DIALOG_WHAT = 1;
 
     /**
-     * 执行时时任务
+     * 执行实时任务
      */
     public static Handler mHandler = new Handler(Looper.getMainLooper()) {
 
@@ -213,7 +244,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
         mAccountMessage.setAuthToken(authToken);
         mAccountMessage.setAppID(appID);
         mAccountMessage.setVendorPhone(vendorPhone);
-//        mMediaMusic = new MediaMusicOfCall(Launcher.this);
+        //mMediaMusic = new MediaMusicOfCall(Launcher.this);
         MediaMusicOfCall.intPlayData(BaseApplication.context());
         KeyEventDialogManager.getInstance().initKeyEventDialogParams(Launcher.this, mVideoView);
         DongDongCenter.getInstance().initSDK(Launcher.this);// 初始化sdk
@@ -230,6 +261,14 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
                 mLlWallDeviceDongHao, mLlWallDeviceUnit, mLlWallDeviceRoomNum);
         initTimer();// 初始化界面工作线程池
         DDLog.i("Launcher.clazz--->>> onCreate...............");
+
+        mRvBulletin.setLayoutManager(new LinearLayoutManager(this));
+        mRvBulletin.setItemAnimator(new DefaultItemAnimator());
+        mBulletinAdapter = new BulletinAdapter(Launcher.this, mBeanList);
+        mRvBulletin.setAdapter(mBulletinAdapter);
+        mBulletinAdapter.setOnItemClickListener(onBulletinItemClickListener);
+        //向物业平台请求公告
+        initBulletin();
     }
 
     @Override
@@ -292,7 +331,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
             mVideoView = null;
         }
         Debug.stopMethodTracing();
-//        mMediaMusic.release();
+        //mMediaMusic.release();
         MediaMusicOfCall.release();
         stopTimer();
         if (mSearchCast != null) {
@@ -308,7 +347,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
      */
     public void initAppStatus() {
         DeviceApplication.DEVICE_WORKING_STATUS = DeviceApplication.DEVICE_FREE;//设备处于空闲状态
-//        CountTimeRunnable.isTalkingOrMonitoring = false;//设备处于非监控或者对讲状态
+        //CountTimeRunnable.isTalkingOrMonitoring = false;//设备处于非监控或者对讲状态
         DeviceApplication.isSystemSettingStatus = false;// true---系统设置状态  false--非系统设置状态
         DeviceApplication.isCallStatus = false;// 是否在呼叫状态
         DeviceApplication.isYTXPhoneCall = false;// 是否云通讯在打电话状态
@@ -340,7 +379,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
         // 调用此方法便执行一次，然后每1秒执行一次，此处最好不要用Timer定时器，Timer是根据系统时间来做为执行
         //事件单位，也不要用Handler,原因一样。如果系统时间有问题，那么我们的任务就死了。这里最好用线程池！！！
         TimerTaskManager.addOneTask(mRunnable);
-//        TimerTaskManager.addOneTask(mRunnable2);
+        //TimerTaskManager.addOneTask(mRunnable2);
         DDLog.i("Launcher.clazz--->>>initTimer  !!!!");
     }
 
@@ -364,7 +403,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
                     // MediaController mediaController = new
                     // MediaController(this);
                     // mVideoView.setMediaController(mediaController);
-                    mVideoView.setVideoLayout(VideoView.VIDEO_LAYOUT_ORIGIN, 0);
+                    mVideoView.setVideoLayout(VideoView.VIDEO_LAYOUT_ZOOM, 0);
                     //mVideoView.setHardwareDecoder(true);//硬解码
                     mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
@@ -398,9 +437,79 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
         }
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////以下是响应各种回调
-    ////////////////////////////////////////////////////////////////////////////////////////////
+    //初始化物业公告
+    private void initBulletin() {
+        //查询本地数据，并显示
+        List<BulletinBean> localData = BulletinOpe.queryAll(BaseApplication.context());
+        if (localData.size() > 0) {
+            mBeanList.clear();
+            for (BulletinBean localBean : localData) {
+                mBeanList.add(localBean);
+            }
+            notifyDataSetChanged();
+        }
+    }
+
+
+    //物业公告更新
+    private void notifyDataSetChanged() {
+        //倒序排列(按时间)
+        Collections.sort(mBeanList, Collections.reverseOrder());
+        mBulletinAdapter.notifyDataSetChanged();
+    }
+
+    //物业公告删除
+    private void deleteLocal(List<BulletinBean> localData) {
+        int count = localData.size() - AppConfig.BULLETIN_COUNT;
+        if (count > 0) {
+            List<Long> bulletinIndex = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                long bulletinId = localData.get(i).getId();
+                Log.e("GT", "Launcher.clazz-->deleteLocal()-->bulletinId:" + bulletinId);
+                bulletinIndex.add(bulletinId);
+            }
+            //删除最开始保存的（相较而言时间早一点的）
+            BulletinOpe.delete(BaseApplication.context(), bulletinIndex);
+        }
+    }
+
+    BulletinAdapter.OnItemClickListener onBulletinItemClickListener = new BulletinAdapter.OnItemClickListener() {
+        @Override
+        public void onItemClick(View view, int position) {
+            // 一个自定义的布局，作为显示的内容
+            View contentView = LayoutInflater.from(Launcher.this).inflate
+                    (R.layout.bulletin_pop_window, null);
+            ((TextView) contentView.findViewById(R.id.tv_detailTitle)).setText
+                    (mBeanList.get(position).getTitle());
+            ((TextView) contentView.findViewById(R.id.tv_detailNotice)).setText
+                    (mBeanList.get(position).getNotice());
+            ((TextView) contentView.findViewById(R.id.tv_detailCreated)).setText
+                    (mBeanList.get(position).getCreated());
+            final PopupWindow popupWindow = new PopupWindow(contentView, 600, 500, true);
+            popupWindow.setTouchable(true);
+            popupWindow.setTouchInterceptor(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    Log.i("mengdd", "onTouch : ");
+                    return false;
+                    // 这里如果返回true的话，touch事件将被拦截
+                    // 拦截后 PopupWindow的onTouchEvent不被调用，这样点击外部区域无法dismiss
+                }
+            });
+            // 如果不设置PopupWindow的背景，无论是点击外部区域还是Back键都无法dismiss弹框
+            // 我觉得这里是API的一个bug
+            popupWindow.setBackgroundDrawable(getResources().getDrawable
+                    (R.mipmap.background_blue_sky));
+            //设置显示位置
+            popupWindow.showAtLocation(view, Gravity.START, 0, 0);
+            // 设置好参数之后再show
+            popupWindow.showAsDropDown(view);
+        }
+    };
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////以下是响应各种回调
+////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * 呼叫回来的状态
@@ -410,8 +519,7 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
      */
     @Override
     public int onPlayOrStopDevice(final int status) {// 呼叫回来的状态
-        DDLog.i("Launcher.clazz*****************onPlayOrStopDevice status:"
-                + status);
+        DDLog.i("Launcher.clazz*****************onPlayOrStopDevice status:" + status);
         KeyEventManager.getInstance().resetKeyboardEventStatus();
         KeyEventDialogManager.getInstance().dismissQueryRoomDialog();
         KeyEventDialogManager.getInstance().onPlayOrStopDevice(status);
@@ -849,6 +957,22 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     }
 
     /**
+     * 处理收到物业更新的通知
+     *
+     * @param bulletinList 获取到的更新数据
+     */
+    @Override
+    public int onGetBulletinFromNet(List<BulletinBean> bulletinList) {
+        Log.e("GT", "Launch.clazz-->onGetBulletinFromNet()-->bulletinList:" + bulletinList);
+        mBeanList.clear();
+        for (BulletinBean bulletinBean : bulletinList) {
+            mBeanList.add(bulletinBean);
+        }
+        notifyDataSetChanged();
+        return 0;
+    }
+
+    /**
      * 根据不同的模式，建议设置的开关状态，可根据实际情况调整，仅供参考。
      *
      * @param isDebugMode 根据调试或发布条件，配置对应的MTA配置
@@ -870,8 +994,8 @@ public class Launcher extends Activity implements LauncherCallback, TimerCallbac
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
-    ///////当按键驱动为Android原生时调用下面方法
-    /////////////////////////////////////////////////////////////////////////////////////
+///////当按键驱动为Android原生时调用下面方法
+/////////////////////////////////////////////////////////////////////////////////////
     private long lastTimeMillis;
 
     @Override

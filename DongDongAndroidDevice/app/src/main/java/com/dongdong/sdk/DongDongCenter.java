@@ -1,6 +1,13 @@
 package com.dongdong.sdk;
 
+import android.util.Log;
+
+import com.alibaba.fastjson.JSON;
 import com.dongdong.AppConfig;
+import com.dongdong.api.ApiHttpClient;
+import com.dongdong.base.BaseApplication;
+import com.dongdong.db.BulletinOpe;
+import com.dongdong.db.entry.BulletinBean;
 import com.dongdong.interf.LauncherAndBackendSignalCallback;
 import com.dongdong.interf.LauncherCallback;
 import com.dongdong.prompt.CountTimeRunnable;
@@ -10,13 +17,25 @@ import com.dongdong.socket.normal.DSParse;
 import com.dongdong.socket.normal.InfoNetParam;
 import com.dongdong.socket.normal.UdpClientSocket;
 import com.dongdong.utils.DDLog;
+import com.jr.door.Launcher;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import cz.msebera.android.httpclient.Header;
+
+import static com.dongdong.api.ApiHttpClient.getDVNotices;
+
 public class DongDongCenter {
+    private static LauncherCallback mLauncherCallback;
     private static DongDongTransferCenter mTransferCenter;
     private static DSParse mCmdParse = new DSParse();
     private static DSParse mAudioParse = new DSParse();
@@ -39,6 +58,7 @@ public class DongDongCenter {
      * 初始化sdk
      */
     public void initSDK(LauncherCallback launcherCallback) {
+        mLauncherCallback = launcherCallback;
         mTransferCenter = new DongDongTransferCenter(launcherCallback);
         mOrdinarySocketThread = new OrdinarySocketThread("CMD_Thread");
         mSoundSocketThread = new SoundSocketThread("Sound_Thread");
@@ -291,57 +311,62 @@ public class DongDongCenter {
     }
 
     /**
-     * 获取访客留影配置
+     * 获取物业公告
+     *
+     * @param deviceId
      */
-    public static void getVisitorPicCfg() {
-        SocketThreadManager.startSocketThread(new Runnable() {
-
+    public static void getBulletinFromNet(final int deviceId) {
+        ((Launcher) mLauncherCallback).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                UdpClientSocket client;
-                String serverHost = AppConfig.SERVER_HOST_IP;
-                int serverPort = 45611;
-                try {
-                    client = new UdpClientSocket();
-                    DSPacket packet = new DSPacket();
-                    byte[] callPkt = packet.getVisitorPicCfgRequest(0);
-                    if (callPkt == null) {
-                        return;
+                //55服务器
+                //String url = "http://192.168.68.55/web/wuye_api/apiserver/2.0/";
+                //新服务器
+                String url = "http://wuye.dd121.com/dd/wuye_api_d/2.0/";
+                RequestParams params = getDVNotices(url, deviceId, 0, 10);
+                ApiHttpClient.postDirect(url, params, new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        try {
+                            String jsonInitData = new JSONObject(new String(responseBody)).getString
+                                    ("response_params");
+                            String jsonData = new JSONObject(jsonInitData).getString("villagenotices");
+                            Log.e("GT", "DongDongCenter.clazz-->getBulletinFromNet()-->jsonData:" + jsonData);
+                            if (jsonData.equals("[]")) {
+                                return;
+                            }
+                            //1.处理从网络中获取的公告
+                            List<BulletinBean> localData = BulletinOpe.queryAll(BaseApplication.context());
+                            List<BulletinBean> netData = JSON.parseArray(jsonData, BulletinBean.class);
+
+                            for (BulletinBean netBean : netData) {
+                                boolean isSame = false;
+                                //1.1将本地数据库中的数据与平台返回数据对比
+                                for (BulletinBean localBean : localData) {
+                                    if (localBean.getCreated().equals(netBean.getCreated()))
+                                        isSame = true;
+                                }
+                                //1.2不相同就添加到本地并且更新界面数据
+                                if (!isSame) {
+                                    BulletinOpe.insert(BaseApplication.context(), netBean);
+                                }
+                            }
+                            //2.回调Launcher，更新界面
+                            if (mLauncherCallback != null)
+                                Log.e("GT", "DongDongCenter.clazz-->mLauncherCallback:" + mLauncherCallback);
+                            mLauncherCallback.onGetBulletinFromNet(BulletinOpe.queryAll(BaseApplication.context()));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    client.send(serverHost, serverPort, callPkt, callPkt.length);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
-            }
-        }, "getVisitorPicCfg");
-    }
-
-    /**
-     * 设置访客留影配置
-     */
-    public static void setVisitorPicCfg(final int configure) {
-        SocketThreadManager.startSocketThread(new Runnable() {
-
-            @Override
-            public void run() {
-                UdpClientSocket client;
-                String serverHost = AppConfig.SERVER_HOST_IP;
-                int serverPort = 45611;
-                try {
-                    client = new UdpClientSocket();
-                    DSPacket packet = new DSPacket();
-                    byte[] callPkt = packet.setVisitorPicCfgRequest(0, configure);
-                    if (callPkt == null) {
-                        return;
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                        Log.e("GT", "Launcher.clazz-->getBulletinFromNet()-->onFailure");
                     }
-                    client.send(serverHost, serverPort, callPkt, callPkt.length);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                });
             }
-        }, "setVisitorPicCfg");
+        });
     }
 
 

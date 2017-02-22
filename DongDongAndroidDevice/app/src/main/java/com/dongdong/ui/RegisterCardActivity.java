@@ -1,5 +1,6 @@
 package com.dongdong.ui;
 
+import com.dongdong.utils.DeviceInfoUtils;
 import com.dongdong.widget.SearchDevicesView;
 import com.dongdong.base.BaseApplication;
 import com.dongdong.bean.LocalCardBean;
@@ -70,6 +71,11 @@ public class RegisterCardActivity extends Activity implements CardNumCallback {
 
     @Override
     public void onFindCard(final String cardNum) {
+        initTipDialog(cardNum);
+        DDLog.i("RegisterCardActivity.clazz --onFindCard>>>cardNum :" + cardNum);
+    }
+
+    private void initTipDialog(final String cardNum) {
         if (mCommonDialog.isShowing()) {
             mCommonDialog.dismiss();
         }
@@ -94,7 +100,6 @@ public class RegisterCardActivity extends Activity implements CardNumCallback {
         mCommonDialog.setNegativeButton(R.string.cancel, null);
         mCommonDialog.setCancelable(true);
         mCommonDialog.show();
-        DDLog.i("RegisterCardActivity.clazz --onFindCard>>>cardNum :" + cardNum);
     }
 
     @OnClick({R.id.iv_back})

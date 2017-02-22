@@ -54,6 +54,11 @@ public class AppConfig {
     public final static int UNLOCK_RECORD_COUNT = 4000;
 
     /**
+     * 物业公告允许本地保存的最大条数
+     */
+    public final static int BULLETIN_COUNT=5;
+
+    /**
      * 开门记录的开门类型
      */
     public final static int UNLOCK_TYPE_APP = 1;// 手机app点击开门

@@ -489,31 +489,4 @@ public class DSPacket {
         mByteInput.setOffset(curLen);
         return mByteInput.getCopyBytes();
     }
-
-    /**
-     * 获取访客留影配置请求
-     *
-     * @param cmdFlag 请求消息的用户数据，相应的回应消息回传该值
-     * @return data    返回打包数据
-     */
-    public byte[] getVisitorPicCfgRequest(int cmdFlag) {
-        APlatData.debugLog("DSPacket.clazz--->>>getVisitorPicCfgRequest: cmdFlag:" + cmdFlag);
-        packetHeader(cmdFlag, APlatData.CMD_GET_VISITOR_PIC_CFG_REQUEST, (short) 1, (short) 1);
-        return mByteInput.getCopyBytes();
-    }
-
-    /**
-     * 设置访客留影配置请求
-     *
-     * @param cmdFlag 请求消息的用户数据，相应的回应消息回传该值
-     * @param configure 配置参数
-     * @return
-     */
-    public byte[] setVisitorPicCfgRequest(int cmdFlag,int configure){
-        APlatData.debugLog("DSPacket.clazz--->>>setVisitorPicCfgRequest cmdFlag:" + cmdFlag
-                + " configure:" + configure);
-        packetHeader(cmdFlag, APlatData.CMD_SET_VISITOR_PIC_CFG_REQUEST, (short) 1, (short) 1);
-        mByteInput.putInt(configure);
-        return mByteInput.getCopyBytes();
-    }
 }

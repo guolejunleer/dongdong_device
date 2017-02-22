@@ -11,7 +11,7 @@ import java.io.IOException;
 import com.dongdong.socket.normal.DSPacket;
 import com.dongdong.socket.normal.UdpClientSocket;
 
-public class AudioPlay {
+public class DDAudioPlay {
     private AudioTrack mAudioTrack = null;
     private DSPacket packet = null;
     //byte[] audioData = new byte[320];
@@ -19,7 +19,7 @@ public class AudioPlay {
 
     private int serverVideoPort = 45613;
 
-    public AudioPlay() {
+    public DDAudioPlay() {
         if (packet == null) {
             packet = new DSPacket();
         }

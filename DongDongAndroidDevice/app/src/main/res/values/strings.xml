@@ -128,4 +128,5 @@
     <string name="pwd_unlock">密码开锁</string>
     <string name="success_setting">设置成功</string>
     <string name="fail_setting">设置失败,请确定第一行三项全部选中</string>
+    <string name="no_bulletin">物业暂未发布公告</string>
 </resources>

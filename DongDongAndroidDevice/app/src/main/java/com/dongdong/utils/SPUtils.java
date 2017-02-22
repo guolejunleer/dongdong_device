@@ -11,6 +11,7 @@ public class SPUtils {
 
     //配置文件名字
     public static final String DD_CONFIG_SHARE_PREF_NAME = "dd_configs";
+    public static final String PHOTO_MODE_CONFIG_SHARE_PREF_NAME = "photo_mode_configs";
     //下面是配置文件键名称
     public static final String SP_KEY_DEVICE_ID = "device_id";
     public static final String SP_KEY_ACCOUNT_SID = "account_sid";
@@ -20,6 +21,9 @@ public class SPUtils {
     public static final String SP_KEY_DEVICE_MODE = "device_mode";
     public static final String SP_KEY_MANAGEMENT_PWD = "management_pwd";
     public static final String SP_KEY_AD_VOLUME = "ad_volume";
+    //真正的设备Id
+    public static final String SP_KEY_BULLETIN_INDEX = "bulletin_index";
+    public static final String SP_PHOTO_MODE_KEY = "photo_mode";
 
     public static void setParam(Context context, String spName, String key,
                                 Object object) {

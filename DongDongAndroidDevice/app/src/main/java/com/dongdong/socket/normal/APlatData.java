@@ -178,9 +178,6 @@ public class APlatData {
     final static short CMD_UNLOCK_TYPE_HISTORY_DATA_RESULT = 0x010E;
 
     final static short CMD_GET_VISITOR_PIC_CFG_REQUEST = 0x010F;  //访客留影协议
-    final static short CMD_GET_VISITOR_PIC_CFG_RESULT = 0x0110;
-    final static short CMD_SET_VISITOR_PIC_CFG_REQUEST = 0x0111;
-    final static short CMD_SET_VISITOR_PIC_CFG_RESULT = 0x0112;
 
 
     /**

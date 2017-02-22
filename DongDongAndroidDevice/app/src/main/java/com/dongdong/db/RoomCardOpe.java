@@ -84,7 +84,6 @@ public class RoomCardOpe {
         }
     }
 
-
     public static void deleteDataByBean(Context context, RoomCardBean roomCardBean) {
         RoomCardBeanDao dao = DBManager.getDaoSession(context).getRoomCardBeanDao();
         List<RoomCardBean> beens = dao.queryBuilder().where(

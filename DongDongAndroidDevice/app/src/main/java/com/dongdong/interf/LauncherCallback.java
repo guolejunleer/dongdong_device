@@ -1,6 +1,9 @@
 package com.dongdong.interf;
 
+import com.dongdong.db.entry.BulletinBean;
 import com.dongdong.socket.normal.InfoNetParam;
+
+import java.util.List;
 
 /**
  * Launcher界面接收各种事件信息后的回调接口
@@ -32,4 +35,6 @@ public interface LauncherCallback {
     int onGetTimestampResult(int platformTime);
 
     int onGetHistoryUnLockRecordRequest();
+
+    int onGetBulletinFromNet(List<BulletinBean> bulletinList);
 }

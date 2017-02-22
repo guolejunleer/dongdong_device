@@ -1,5 +1,8 @@
 package com.dongdong.socket.beat;
 
+import com.dongdong.base.BaseApplication;
+import com.dongdong.utils.SPUtils;
+
 /**
  * DeviceService数据包打包类
  */
@@ -63,13 +66,13 @@ public class Packet {
     /**
      * 搜索回应
      *
-     * @param cmdflag 与请求消息中cmdflag一致
+     * @param cmdFlag 与请求消息中cmdflag一致
      * @return result
      */
-    public byte[] scanReponese(int cmdflag) {
-        ALinuxData.debugLog("beat.Packet.clazz--->>>scanReponese cmdflag:"
-                + cmdflag);
-        packetHeader(cmdflag, ALinuxData.CMD_SCAN_RESPONSE, (short) 1, (short) 1);
+    public byte[] scanResponse(int cmdFlag) {
+        ALinuxData.debugLog("beat.Packet.clazz--->>>scanResponse cmdflag:"
+                + cmdFlag);
+        packetHeader(cmdFlag, ALinuxData.CMD_SCAN_RESPONSE, (short) 1, (short) 1);
         mByteInput.putInt(ALinuxData.mCameraId);
         int length = 32 + 64 + 16 + 16 + 2 + 2 + 4 + 32;
         for (int i = 0; i < length; i++) {
@@ -81,19 +84,24 @@ public class Packet {
     /**
      * 搜索回应
      *
-     * @param cmdflag 与请求消息中cmdflag一致
+     * @param cmdFlag 与请求消息中cmdFlag一致
      * @return result
      */
-    public byte[] scanReponese(int cmdflag, short reserved1) {
-        ALinuxData.debugLog("beat.Packet.clazz--->>>scanReponese cmdflag:"
-                + cmdflag + ",reserved1:" + reserved1);
-        packetHeader(cmdflag, ALinuxData.CMD_SCAN_RESPONSE, (short) 1,
+    public byte[] scanResponse(int cmdFlag, short reserved1) {
+        ALinuxData.debugLog("beat.Packet.clazz--->>>scanResponse cmdflag:"
+                + cmdFlag + ",reserved1:" + reserved1);
+        packetHeader(cmdFlag, ALinuxData.CMD_SCAN_RESPONSE, (short) 1,
                 (short) 1, reserved1);
         mByteInput.putInt(ALinuxData.mCameraId);
         int length = 32 + 64 + 16 + 16 + 2 + 2 + 4 + 32;
         for (int i = 0; i < length; i++) {
             mByteInput.putByte((byte) 0);
         }
+        Integer photoMode = (Integer) SPUtils.getParam(
+                BaseApplication.context(), SPUtils.PHOTO_MODE_CONFIG_SHARE_PREF_NAME, SPUtils.SP_PHOTO_MODE_KEY, 7);
+        ALinuxData.debugLog("beat.Packet.clazz--->>>scanResponse cmdFlag:"
+                + cmdFlag + ",reserved1:" + reserved1 + ",photoMode:" + photoMode);
+        mByteInput.putInt(photoMode);
         return mByteInput.getCopyBytes();
     }
 

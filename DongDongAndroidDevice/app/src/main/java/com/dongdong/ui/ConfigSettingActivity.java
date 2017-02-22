@@ -8,12 +8,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 
-import com.dongdong.DeviceApplication;
 import com.dongdong.base.BaseApplication;
-import com.dongdong.interf.ExpandLauncherCallback;
 import com.dongdong.sdk.DongDongCenter;
 import com.dongdong.socket.normal.APlatData;
 import com.dongdong.utils.DDLog;
+import com.dongdong.utils.SPUtils;
 import com.jr.door.R;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-public class ConfigSettingActivity extends Activity implements ExpandLauncherCallback {
+public class ConfigSettingActivity extends Activity {
     private Unbinder mUnBinder;
     @BindView(R.id.cb_calling)
     CheckBox mCbCalling;
@@ -53,7 +52,6 @@ public class ConfigSettingActivity extends Activity implements ExpandLauncherCal
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_config_setting);
         mUnBinder = ButterKnife.bind(this);
-        DongDongCenter.getVisitorPicCfg();
         mCheckBoxList.add(mCbCalling);
         mCheckBoxList.add(mCbAppAnswer);
         mCheckBoxList.add(mCbPhoneAnswer);
@@ -61,46 +59,34 @@ public class ConfigSettingActivity extends Activity implements ExpandLauncherCal
         mCheckBoxList.add(mPhoneUnlock);
         mCheckBoxList.add(mCardUnlock);
         mCheckBoxList.add(mPwdUnlock);
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        DeviceApplication.addExpandLauncherCallback(this);
-    }
+        Integer photoMode = (Integer) SPUtils.getParam(BaseApplication.context(),
+                SPUtils.PHOTO_MODE_CONFIG_SHARE_PREF_NAME, SPUtils.SP_PHOTO_MODE_KEY, 7);
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        DeviceApplication.removeExpandLauncherCallback(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mUnBinder.unbind();
-    }
-
-
-    @Override
-    public void onGetVisitorPicCfgResult(int configure) {
-        DDLog.i("ConfigSettingActivity.clazz onGetVisitorPicCfgResult() configure:"
-                + Integer.toBinaryString(configure));
+        DDLog.i("ConfigSettingActivity.clazz--->>>photoMode:" + photoMode);
         for (int i = 0; i < mCheckBoxList.size(); i++) {
-            if ((configure & (int) Math.pow(2, i)) > 0) {
+            if ((photoMode & (int) Math.pow(2, i)) > 0) {
                 mCheckBoxList.get(i).setChecked(true);
             } else {
                 mCheckBoxList.get(i).setChecked(false);
             }
         }
     }
+
     @Override
-    public void onSetVisitorPicCfgResult(int result) {
-        if (result == APlatData.RESULT_SUCCESS) {
-            BaseApplication.showToast(getString(R.string.success_setting));
-        }else{
-            BaseApplication.showToast(getString(R.string.fail_setting));
-        }
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mUnBinder.unbind();
     }
 
     @OnClick({R.id.iv_back, R.id.bt_sure})
@@ -113,9 +99,9 @@ public class ConfigSettingActivity extends Activity implements ExpandLauncherCal
                         value += Math.pow(2, i);
                     }
                 }
-                DDLog.i("ConfigSettingActivity.clazz onClick() value:"
-                        + Integer.toBinaryString(value));
-                DongDongCenter.setVisitorPicCfg(value);
+                DDLog.i("ConfigSettingActivity.clazz onClick() value:" + value
+                        + ",toBinaryString:" + Integer.toBinaryString(value));
+                BaseApplication.showToast(getString(R.string.success_setting));
                 break;
             case R.id.iv_back:
                 finish();

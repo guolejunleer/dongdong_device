@@ -14,6 +14,8 @@ import com.dongdong.db.RoomIndexOpe;
 import com.dongdong.db.entry.RoomCardBean;
 import com.dongdong.db.entry.RoomIndexBean;
 import com.dongdong.sdk.DongDongCenter;
+import com.dongdong.utils.DDLog;
+import com.dongdong.utils.SPUtils;
 
 /**
  * 数据包解析类
@@ -128,7 +130,7 @@ public class Parser {
      * @throws IOException
      */
     private void sendResponse() throws IOException {
-        byte[] bytes = mPacket.scanReponese(cmdFlag);
+        byte[] bytes = mPacket.scanResponse(cmdFlag);
         DatagramPacket dp = new DatagramPacket(bytes, bytes.length, mSendIntAddr,
                 ALinuxData.UNICAST_PORT);
         mUnisocket.send(dp);
@@ -144,7 +146,7 @@ public class Parser {
      * @throws IOException
      */
     private void sendResponse(short reserved1) throws IOException {
-        byte[] bytes = mPacket.scanReponese(cmdFlag, reserved1);
+        byte[] bytes = mPacket.scanResponse(cmdFlag, reserved1);
         DatagramPacket dp = new DatagramPacket(bytes, bytes.length, mSendIntAddr,
                 ALinuxData.UNICAST_PORT);
         mUnisocket.send(dp);
@@ -314,6 +316,31 @@ public class Parser {
             }
             ALinuxData.debugLog("Parser.clazz-->>>mPullRoomIdFlag==3 roomCount:" + roomCount
                     + ",RoomIDSet:" + DeviceApplication.mRoomIDSet + ",cmdFlag:" + cmdFlag);
+            remainLen = mByteOutput.getRemainDataLength();
+            if (remainLen < 4) {
+                DDLog.i("Parser.clazz get deviceId to short!!!");
+                return -1;
+            }
+            //3.获取设备数据库Id
+            int deviceId = mByteOutput.getInt();
+            DDLog.i("GT", "Parser.clazz-->>>mPullRoomIdFlag==3 deviceId:" + deviceId);
+
+            remainLen = mByteOutput.getRemainDataLength();
+            if (remainLen < 4) {
+                DDLog.e("Parser.clazz get bulletinIndex to short!!!");
+                return -1;
+            }
+            //4.获取物业公告Index
+            int bulletinIndex = mByteOutput.getInt();
+            if (!((Integer) SPUtils.getParam(BaseApplication.context(), SPUtils.DD_CONFIG_SHARE_PREF_NAME,
+                    SPUtils.SP_KEY_BULLETIN_INDEX, 0) == bulletinIndex)) {
+                //4.1检测到Index有变化，那么向物业平台请求最新物业公告
+                DongDongCenter.getBulletinFromNet(deviceId);
+                //4.2将最新Index保存到本地
+                SPUtils.setParam(BaseApplication.context(), SPUtils.DD_CONFIG_SHARE_PREF_NAME,
+                        SPUtils.SP_KEY_BULLETIN_INDEX, bulletinIndex);
+            }
+            DDLog.i("Parser.clazz-->>>mPullRoomIdFlag==3 bulletinIndex:" + bulletinIndex);
             //回复心跳包
             sendResponse((short) 0);
         }
