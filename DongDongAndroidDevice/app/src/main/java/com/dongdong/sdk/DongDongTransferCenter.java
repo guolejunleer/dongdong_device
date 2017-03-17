@@ -76,10 +76,10 @@ public class DongDongTransferCenter implements DeviceServiceCallback {
                 case PLAY_REQUEST_WHAT:
                     Bundle dataPlay = msg.getData();
                     // 播放请求回调
-                    if (dataPlay.getInt(MEDIA_MODE) == 1) {
+                    if (dataPlay.getInt(MEDIA_MODE) == 1) {//1.视频源核心板取
                         // videoRecorder.startVideo();
                     }
-                    if (dataPlay.getInt(MEDIA_MODE) == 2) {
+                    if (dataPlay.getInt(MEDIA_MODE) == 2) {//2.音频Android板取
                         mAudioRecorder.startSendAudio();
                         mDDAudioPlay.openSound();
                     }
