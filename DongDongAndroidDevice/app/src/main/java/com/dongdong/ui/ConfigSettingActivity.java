@@ -102,6 +102,9 @@ public class ConfigSettingActivity extends Activity {
                 DDLog.i("ConfigSettingActivity.clazz onClick() value:" + value
                         + ",toBinaryString:" + Integer.toBinaryString(value));
                 BaseApplication.showToast(getString(R.string.success_setting));
+                SPUtils.setParam(BaseApplication.context(),
+                        SPUtils.PHOTO_MODE_CONFIG_SHARE_PREF_NAME,
+                        SPUtils.SP_PHOTO_MODE_KEY, value);
                 break;
             case R.id.iv_back:
                 finish();
